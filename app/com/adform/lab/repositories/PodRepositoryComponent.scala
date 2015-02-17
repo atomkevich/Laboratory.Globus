@@ -1,0 +1,19 @@
+package com.adform.lab.repositories
+
+import com.adform.lab.domain.{POD, Employee}
+
+/**
+ * Created by Alina_Tamkevich on 2/11/2015.
+ */
+trait PodRepositoryComponent {
+  def podRepository: PodRepository
+
+
+  trait PodRepository {
+    def updateProfile(podId: String, profileAttribute: Map[String, String])
+    def save(pod: POD): Unit
+    def getById(id: String): Option[POD]
+    def find(params: Map[String, String], skip: Int, limit: Int): List[POD]
+    def getAncestorsById(id: String): List[String]
+  }
+}

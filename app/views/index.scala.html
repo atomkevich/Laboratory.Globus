@@ -1,0 +1,17 @@
+@(message: String)
+
+@main("Welcome to Play") {
+
+    <h1>Login</h1>
+
+    <p>You are in the public area where no authentication is required</p>
+
+    <ul>
+        <li><h1><a href="@com.adform.lab.controllers.routes.Authentication.login">Please login</a></h1></li>
+
+        <li><a href="@com.adform.lab.controllers.routes.Restricted.loggedUserArea">Restricted Area2222222</a></li>
+        <li><a href="@com.adform.lab.controllers.routes.Restricted.adminArea">Restricted Area2222222</a></li>
+        <li><a href="/employees">Get All Employees</a></li>
+        <li><a href="/pods">Get All PODs</a></li>
+    </ul>
+}

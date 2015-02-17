@@ -1,0 +1,30 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+# Authentication
+GET           /login                    com.adform.lab.controllers.Authentication.login
+POST          /login                    com.adform.lab.controllers.Authentication.authenticate
+GET           /logout                   com.adform.lab.controllers.Authentication.logout
+
+# Restricted content
+GET           /loggedUserArea           com.adform.lab.controllers.Restricted.loggedUserArea
+GET           /adminArea                com.adform.lab.controllers.Restricted.adminArea
+
+# Home page
+GET           /                         com.adform.lab.controllers.Application.index
+POST          /employees                com.adform.lab.controllers.Application.createEmployee
+GET           /employees/:id            com.adform.lab.controllers.Application.findEmployeeById(id: String)
+GET           /employees                com.adform.lab.controllers.Application.findEmployeeByParams
+PUT           /employees/roles          com.adform.lab.controllers.Application.assignRole
+PUT           /employees/profile        com.adform.lab.controllers.Application.updateEmployeeProfile
+PUT           /employees                com.adform.lab.controllers.Application.multiUpdate
+DELETE        /employees/:id            com.adform.lab.controllers.Application.delete(id: String)
+DELETE        /employees                com.adform.lab.controllers.Application.deleteByIds
+
+
+POST          /pods                     com.adform.lab.controllers.Application.createPOD
+GET           /pods/:id                 com.adform.lab.controllers.Application.getPODById(id: String)
+GET           /pods                     com.adform.lab.controllers.Application.findPODs
+PUT           /pods/profile             com.adform.lab.controllers.Application.updatePODProfile
+# Map static resources from the /public folder to the /assets URL path
+GET           /assets/*file             controllers.Assets.at(path="/public", file)
