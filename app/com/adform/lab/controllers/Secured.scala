@@ -22,7 +22,7 @@ trait Secured {
 
   def WithAuthentication(f: => Employee => Request[AnyContent] => Result) =
     Action( request =>
-      request.session.get("email1").flatMap(Cache get _) match {
+      request.session.get("email").flatMap(Cache get _) match {
         case Some(employee: Employee) => f(employee)(request)
         case None => onUnauthorized(request)
       }

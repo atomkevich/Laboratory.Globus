@@ -43,7 +43,7 @@ object Authentication extends Controller with Secured{
           Application.getEmployeeByEMail(form._1) match {
             case Some(employee: Employee) => {
               Cache.set(form._1, employee, 10000)
-              Redirect(routes.Application.index).withSession("email1" -> form._1)
+              Redirect(routes.Application.index).withSession("email" -> form._1)
             }
             case None => loginError
           }
