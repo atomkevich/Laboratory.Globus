@@ -1,16 +1,22 @@
 package com.adform.lab.controllers
 
+import com.adform.lab.controllers.Application._
+import com.adform.lab.controllers.PODController._
 import com.adform.lab.converters.Helper
 import com.adform.lab.domain.Employee
+import com.adform.lab.repositories.{PodRepositoryComponentImpl, EmployeeRepositoryComponentImpl}
 import play.api.mvc._
 import play.api.libs.json._
-import com.adform.lab.services.EmployeeServiceComponent
+import com.adform.lab.services.{PODServiceComponentImpl, EmployeeProfileServiceComponentImpl, EmployeeServiceComponentImpl, EmployeeServiceComponent}
 
 
 /**
  * Created by Alina_Tamkevich on 2/9/2015.
  */
-trait EmployeeController extends Controller with Secured{
+object EmployeeController extends Controller
+                            with Secured  with EmployeeServiceComponentImpl
+                            with EmployeeProfileServiceComponentImpl  with EmployeeRepositoryComponentImpl
+                            with PODServiceComponentImpl  with PodRepositoryComponentImpl{
   this: EmployeeServiceComponent =>
 
 
@@ -19,6 +25,8 @@ trait EmployeeController extends Controller with Secured{
       Json.obj(
          "id" -> employee.id,
         "name" -> employee.employeeProfile.name,
+        "email" -> employee.employeeProfile.email,
+        "yammerUrl" -> employee.employeeProfile.yammerUrl,
         "location" -> employee.employeeProfile.location,
         "role" -> Helper.convertRolesToString(employee.roles),
         "parentId" -> employee.parent,
@@ -32,14 +40,12 @@ trait EmployeeController extends Controller with Secured{
   }
 
   def deleteByIds() =  Action(parse.json){request =>
-    val ids = (request.body \ "ids").asOpt[List[String]]
-    if (ids.isDefined) {
-      employeeService.deleteEmployees(ids.get)
+      (request.body \ "ids").asOpt[List[String]].map {ids =>
+      employeeService.deleteEmployees(ids)
       Ok("Successfully deleted")
-    } else {
-      BadRequest("Bad request. Id of employee for delete is not present.")
-    }
+    } getOrElse(BadRequest("Bad request. Id of employee for delete is not present."))
   }
+
 
   def createEmployee = Action(parse.json) { request =>
     val email = (request.body \ "email").asOpt[String]
@@ -62,7 +68,7 @@ trait EmployeeController extends Controller with Secured{
 
     }
   }
-    def findEmployeeByParams = Action { request =>
+    def findEmployeeByParams = WithAuthentication { employee => implicit request =>
       val params = request.queryString.map { case (k, v) => k -> v.mkString}
       val employees = employeeService.getAllEmployees(params)
       if (!employees.isEmpty) {
@@ -111,5 +117,9 @@ trait EmployeeController extends Controller with Secured{
     } else {
       BadRequest("Wrong params")
     }
+  }
+
+  def newEmployeePage = HasAnyRole("PODKeeper", "PODLeader", "Admin") { employee => implicit request =>
+    Ok(views.html.employee())
   }
 }

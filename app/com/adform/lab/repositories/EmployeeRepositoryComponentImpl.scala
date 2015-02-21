@@ -17,8 +17,7 @@ trait EmployeeRepositoryComponentImpl extends  EmployeeRepositoryComponent{
 
   class EmployeeRepositoryImpl extends EmployeeRepository {
     override def get(id: String): Option[Employee] = {
-      val doc = MongoContext.employeeCollection.findOne(MongoDBObject("_id" -> id))
-      Option(EmployeeConverter.fromBson(doc.get))
+      MongoContext.employeeCollection.findOne(MongoDBObject("_id" -> id)).map(employee => EmployeeConverter.fromBson(employee))
     }
 
     override def delete(id: String): Unit = {
@@ -38,7 +37,7 @@ trait EmployeeRepositoryComponentImpl extends  EmployeeRepositoryComponent{
     override def getEmployeesByRoleAndPod(role: List[String], parentId: String): List[Employee] = {
       val searchQuery: DBObject = ("role" $in role) ++ ("parentId" -> parentId)
       val employees = MongoContext.employeeCollection.find(searchQuery)
-      (for (employee <- employees) yield EmployeeConverter.fromBson(employee)).toList
+      employees.map(employee => EmployeeConverter.fromBson(employee)).toList
     }
 
     override def assignRole(id: String, role: List[String]): Unit = {
@@ -58,9 +57,8 @@ trait EmployeeRepositoryComponentImpl extends  EmployeeRepositoryComponent{
     }
 
     override def getByEmail(email: String): Option[Employee] = {
-      val doc = MongoContext.employeeCollection.findOne(MongoDBObject("profile.email" -> email.toLowerCase))
-      if (doc.isDefined)
-        Option(EmployeeConverter.fromBson(doc.get)) else Option.empty
+      MongoContext.employeeCollection.findOne(MongoDBObject("profile.email" -> email.toLowerCase))
+        .map(employee => EmployeeConverter.fromBson(employee))
     }
   }
 }

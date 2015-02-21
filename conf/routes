@@ -7,24 +7,27 @@ POST          /login                    com.adform.lab.controllers.Authenticatio
 GET           /logout                   com.adform.lab.controllers.Authentication.logout
 
 # Restricted content
-GET           /loggedUserArea           com.adform.lab.controllers.Restricted.loggedUserArea
-GET           /adminArea                com.adform.lab.controllers.Restricted.adminArea
+#GET           /loggedUserArea           com.adform.lab.controllers.Restricted.loggedUserArea
+#GET           /adminArea                com.adform.lab.controllers.Restricted.adminArea
+#GET           /aaa                      com.adform.lab.controllers.Restricted.adminArea2
 
 # Home page
 GET           /                         com.adform.lab.controllers.Application.index
-POST          /employees                com.adform.lab.controllers.Application.createEmployee
-GET           /employees/:id            com.adform.lab.controllers.Application.findEmployeeById(id: String)
-GET           /employees                com.adform.lab.controllers.Application.findEmployeeByParams
-PUT           /employees/roles          com.adform.lab.controllers.Application.assignRole
-PUT           /employees/profile        com.adform.lab.controllers.Application.updateEmployeeProfile
-PUT           /employees                com.adform.lab.controllers.Application.multiUpdate
-DELETE        /employees/:id            com.adform.lab.controllers.Application.delete(id: String)
-DELETE        /employees                com.adform.lab.controllers.Application.deleteByIds
+POST          /employees                com.adform.lab.controllers.EmployeeController.createEmployee
+GET           /employees/:id            com.adform.lab.controllers.EmployeeController.findEmployeeById(id: String)
+GET           /employees                com.adform.lab.controllers.EmployeeController.findEmployeeByParams
+PUT           /employees/roles          com.adform.lab.controllers.EmployeeController.assignRole
+PUT           /employees/profile        com.adform.lab.controllers.EmployeeController.updateEmployeeProfile
+PUT           /employees                com.adform.lab.controllers.EmployeeController.multiUpdate
+DELETE        /employees/:id            com.adform.lab.controllers.EmployeeController.delete(id: String)
+DELETE        /employees                com.adform.lab.controllers.EmployeeController.deleteByIds
+GET           /employee                 com.adform.lab.controllers.EmployeeController.newEmployeePage
 
-
-POST          /pods                     com.adform.lab.controllers.Application.createPOD
-GET           /pods/:id                 com.adform.lab.controllers.Application.getPODById(id: String)
-GET           /pods                     com.adform.lab.controllers.Application.findPODs
-PUT           /pods/profile             com.adform.lab.controllers.Application.updatePODProfile
+POST          /pods                     com.adform.lab.controllers.PODController.createPOD
+GET           /pod                      com.adform.lab.controllers.PODController.newPod
+GET           /pods/:id                 com.adform.lab.controllers.PODController.getPODById(id: String)
+GET           /pods                     com.adform.lab.controllers.PODController.findPODs
+PUT           /pods/profile             com.adform.lab.controllers.PODController.updatePODProfile
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file             controllers.Assets.at(path="/public", file)
+GET      /views/*any                    com.adform.lab.controllers.Application.loadPublicHTML(any)

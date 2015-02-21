@@ -1,7 +1,7 @@
 package com.adform.lab.converters
 
 import com.mongodb.{BasicDBList, BasicDBObject, DBObject}
-import com.mongodb.casbah.commons.MongoDBObject
+import com.mongodb.casbah.commons.{MongoDBList, MongoDBObject}
 import com.adform.lab.domain.{EmployeeProfile, Role, Employee}
 
 import scala.collection.mutable
@@ -15,31 +15,33 @@ object EmployeeConverter {
     def toBson(employee: Employee): DBObject = {
       MongoDBObject(
         "_id" -> employee.id,
-        "parent_id" -> employee.parent,
+        "parentId" -> employee.parent,
         "ancestors" -> employee.ancestors,
         "roles"  -> Helper.convertRolesToString(employee.roles),
         "profile" -> MongoDBObject(
             "name" -> employee.employeeProfile.name,
             "email"-> employee.employeeProfile.email,
             "location" -> employee.employeeProfile.location,
-             "custom_attribute" -> employee.employeeProfile.customAttribute
+            "yammerUrl" -> employee.employeeProfile.yammerUrl,
+            "custom_attribute" -> employee.employeeProfile.customAttribute
         )
       )
     }
 
-    def fromBson(document: DBObject): Employee = {
-      val profileDocument = document.get("profile").asInstanceOf[BasicDBObject]
+    def fromBson(document: MongoDBObject): Employee = {
+      val profileDocument = document.as[MongoDBObject]("profile")
       val employeeProfile = EmployeeProfile(
-        profileDocument.get("name").asInstanceOf[String],
-        profileDocument.get("email").asInstanceOf[String],
-        profileDocument.get("location").asInstanceOf[String]
+        profileDocument.as[String]("name"),
+        profileDocument.as[String]("email"),
+        profileDocument.as[String]("location"),
+        profileDocument.as[String]("yammerUrl")
       )
       Employee(
-        Option(document.get("_id").asInstanceOf[String]),
+        Option(document.as[String]("_id")),
         employeeProfile,
-        document.get("parentId").asInstanceOf[String],
-        Helper.convertToRoles(Helper.fromBasicDBListToList(document.get("roles").asInstanceOf[BasicDBList])),
-        Helper.fromBasicDBListToList(document.get("ancestors").asInstanceOf[BasicDBList])
+        document.as[String]("parentId"),
+        Helper.convertToRoles(Helper.fromBasicDBListToList(document.as[MongoDBList]("roles"))),
+        Helper.fromBasicDBListToList(document.as[MongoDBList]("ancestors"))
       )
     }
 }

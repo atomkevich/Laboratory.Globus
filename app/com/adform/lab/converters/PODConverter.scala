@@ -1,7 +1,7 @@
 package com.adform.lab.converters
 
 import com.mongodb.{BasicDBList, BasicDBObject, DBObject}
-import com.mongodb.casbah.commons.MongoDBObject
+import com.mongodb.casbah.commons.{MongoDBList, MongoDBObject}
 import com.adform.lab.domain.{PODProfile, POD, EmployeeProfile, Employee}
 
 /**
@@ -21,18 +21,18 @@ object PODConverter {
     )
   }
 
-  def fromBson(document: DBObject): POD = {
-    val profileDocument = document.get("profile").asInstanceOf[BasicDBObject]
+  def fromBson(document: MongoDBObject): POD = {
+    val profileDocument = document.as[MongoDBObject]("profile")
     val podProfile = PODProfile(
-      profileDocument.get("name").asInstanceOf[String],
-      profileDocument.get("location").asInstanceOf[String],
-      profileDocument.get("description").asInstanceOf[String]
+      profileDocument.as[String]("name"),
+      profileDocument.as[String]("location"),
+      profileDocument.as[String]("description")
     )
     POD(
-      Option(document.get("_id").asInstanceOf[String]),
+      Option(document.as[String]("_id")),
       podProfile,
-      Helper.fromBasicDBListToList(document.get("ancestors").asInstanceOf[BasicDBList]),
-      document.get("parentId").asInstanceOf[String]
+      Helper.fromBasicDBListToList(document.as[MongoDBList]("ancestors")),
+      document.as[String]("parentId")
     )
   }
 }

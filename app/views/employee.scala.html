@@ -1,0 +1,52 @@
+
+<div id="header">
+    <div id="logo">
+        <h1><a href="#">POD</a></h1>
+    </div>
+    <div id="menu">
+        <ul>
+            <li class="active"><a href="#" accesskey="1" title="">Home</a></li>
+            <li><a href="#" accesskey="2" title="">Archives</a></li>
+            <li><a href="#" accesskey="3" title="">About</a></li>
+            <li><a href="@com.adform.lab.controllers.routes.Authentication.login">Logout</a></li>
+        </ul>
+    </div>
+</div>
+
+@main("LOGIN") {
+    <link rel="stylesheet" media="screen" href="/assets/stylesheets/default.css"/>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.min.js"></script>
+    <script language="javascript" type="text/javascript">
+    function submitDetailsForm() {
+    alert("sssssssssssssssssssssss")
+    console.log($("#a"))
+    $("#a").submit(function(e) {
+    alert("sssss")
+    e.preventDefault();
+    $.ajax({
+    url: "/employees",
+    contentType: "application/json",
+    type: 'post',
+    dataType: 'json',
+    data: JSON.stringify(($('#a')).serialize()),
+    success: function(data) {
+
+    }
+    });
+
+    });
+
+    }
+    </script>
+
+    <form enctype='text/json' action = "/employees" method="POST" id="a">
+        Email: <input type = "text" name = "email">
+        <input type = "submit" name = "create" onClick='submitDetailsForm()' />
+
+    </form>
+
+}
+
+
+

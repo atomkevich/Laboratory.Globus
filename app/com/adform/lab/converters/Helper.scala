@@ -2,6 +2,7 @@ package com.adform.lab.converters
 
 import com.mongodb.BasicDBList
 import com.adform.lab.domain._
+import com.mongodb.casbah.commons.MongoDBList
 import org.bson.types.ObjectId
 
 /**
@@ -11,6 +12,7 @@ object Helper {
   val convertParam: Map[String, String] =
     Map(
     "name" -> "profile.name",
+    "email" -> "profile.email",
     "location" -> "profile.location",
     "description" -> "profile.description"
   )
@@ -46,8 +48,9 @@ object Helper {
 
   def generateId = Option(ObjectId.get().toString)
 
-  def fromBasicDBListToList(dbList: BasicDBList):List[String] = {
-    List(dbList.toArray()).flatten.asInstanceOf[List[String]]
+  def fromBasicDBListToList(dbList: MongoDBList):List[String] = {
+    dbList.map(_.toString).toList
+    //List(dbList.toArray()).flatten.asInstanceOf[List[String]]
   }
 
   def createSearchQuery(params: Map[String, String]): Map[String, String] = {

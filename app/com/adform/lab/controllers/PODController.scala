@@ -1,15 +1,19 @@
 package com.adform.lab.controllers
 
+import com.adform.lab.controllers.Application._
+import com.adform.lab.controllers.Authentication._
 import com.adform.lab.converters.Helper
 import com.adform.lab.domain.{POD, Employee}
+import com.adform.lab.repositories.PodRepositoryComponentImpl
 import play.api.libs.json.{JsObject, JsValue, Writes, Json}
 import play.api.mvc._
-import com.adform.lab.services.PODServiceComponent
+import com.adform.lab.services.{PODServiceComponentImpl, PODServiceComponent}
 
 /**
  * Created by Alina_Tamkevich on 2/11/2015.
  */
-trait PODController extends Controller with Secured{
+object PODController extends Controller with Secured with PODServiceComponentImpl
+with PodRepositoryComponentImpl{
 
   this: PODServiceComponent =>
 
@@ -50,6 +54,17 @@ trait PODController extends Controller with Secured{
     }
   }
 
+  def linkPODs = Action(parse.json) { request =>
+    val firstPodId = (request.body\ "firstPodId").asOpt[String]
+    val secondPodId = (request.body\ "secondPodId").asOpt[String]
+    if (!firstPodId.isDefined || !secondPodId.isDefined) {
+      val parentPod = podService.linkPOD(firstPodId.get, secondPodId.get)
+      Ok(Json.toJson(parentPod.get))
+    } else {
+      BadRequest("Wrong params")
+    }
+  }
+
   def getPODById(id: String) = Action {
     val pod: Option[POD] = podService.getPODById(id)
     if (pod.isDefined) {
@@ -68,5 +83,36 @@ trait PODController extends Controller with Secured{
     } else {
       BadRequest("Wrong params")
     }
+  }
+
+  def getPODChilds(id: String) = Action {
+    val pods = podService.getPODChildsById(id)
+    if (!pods.isEmpty) {
+      Ok(Json.toJson(pods))
+    } else {
+      NotFound
+    }
+  }
+
+  def getPODLinks(id: String) = Action {
+    val pods = podService.getPODLinksById(id)
+    if (!pods.isEmpty) {
+      Ok(Json.toJson(pods))
+    } else {
+      NotFound
+    }
+  }
+
+  def getParentPOD(id: String) = Action {
+    val pod = podService.getParentPOD(id)
+    if (pod.isDefined) {
+      Ok(Json.toJson(pod))
+    } else {
+      NotFound
+    }
+  }
+
+  def newPod = HasAnyRole("PODKeeper", "PODLeader", "Admin") { employee => implicit request =>
+    Ok(views.html.pod())
   }
 }

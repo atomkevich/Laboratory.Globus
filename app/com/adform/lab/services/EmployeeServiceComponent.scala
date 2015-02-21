@@ -18,5 +18,6 @@ trait EmployeeServiceComponent {
     def updateProfile(id: String, fields: Map[String, String])
     def deleteEmployees(ids: List[String])
     def findEmployeeByEmail(email: String): Option[Employee]
+
   }
 }

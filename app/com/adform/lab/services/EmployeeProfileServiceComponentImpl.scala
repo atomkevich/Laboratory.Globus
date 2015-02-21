@@ -3,8 +3,6 @@ package com.adform.lab.services
 import com.adform.lab.domain.EmployeeProfile
 import net.liftweb.json._
 
-
-import play.api.libs.json.JsValue
 import scalaj.http. Http
 
 /**
@@ -25,7 +23,13 @@ trait EmployeeProfileServiceComponentImpl extends  EmployeeProfileServiceCompone
 
      implicit val formats = DefaultFormats
       val parsed: JValue = parse(request.asString.body)
-      parsed.extract[EmployeeProfile]
+      EmployeeProfile(
+        (parsed \ "name").values.asInstanceOf[String],
+        (parsed \ "email").values.asInstanceOf[String],
+        (parsed \ "location").values.asInstanceOf[String],
+        (parsed \ "web_url").values.asInstanceOf[String],
+        null
+      )
     }
   }
 

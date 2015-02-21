@@ -35,5 +35,25 @@ trait PODServiceComponentImpl extends PODServiceComponent{
       val updateProfile = Map("name" -> profile.name, "location" -> profile.location, "description" -> profile.description) ++ params
       podRepository.updateProfile(podId, updateProfile)
     }
+
+    override def linkPOD(firstPodId: String, secondPodId: String): Option[POD] = {
+      val firstPOD = podRepository.getById(firstPodId)
+      podRepository.movePOD(secondPodId, firstPOD.get.parent, firstPOD.get.ancestors)
+      podRepository.getById(firstPOD.get.parent)
+    }
+
+    override def getPODChildsById(id: String): List[POD] = {
+      podRepository.getChildsById(id)
+    }
+
+    override def getPODLinksById(id: String): List[POD] = {
+      val pod = podRepository.getById(id)
+      pod.map(x => podRepository.getChildsById(x.parent)).get
+    }
+
+    override def getParentPOD(id: String): Option[POD] = {
+      val pod = podRepository.getById(id)
+      podRepository.getById(pod.get.parent)
+    }
   }
 }

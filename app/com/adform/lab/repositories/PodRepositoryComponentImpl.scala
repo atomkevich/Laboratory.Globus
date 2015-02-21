@@ -29,12 +29,20 @@ trait PodRepositoryComponentImpl extends PodRepositoryComponent{
         }
 
         override def find(params: Map[String, String], skip: Int, limit: Int): List[POD] = {
-          val pods = MongoContext.podCollection.find(params).skip(skip).limit(limit)
-          (for (pod <- pods) yield PODConverter.fromBson(pod)).toList
+           MongoContext.podCollection.find(params).skip(skip).limit(limit).map(pod => PODConverter.fromBson(pod)).toList
         }
 
         override def updateProfile(podId: String, profileAttribute: Map[String, String]): Unit = {
           MongoContext.podCollection.update(MongoDBObject("_id"-> podId), $set("profile" -> profileAttribute))
         }
+
+        override def movePOD(id: String, parentId: String, ancestors: List[String]): Unit = {
+          MongoContext.podCollection.update(MongoDBObject("_id" -> id), $set("parentId" -> parentId, "ancestors" -> ancestors))
+        }
+
+        override def getChildsById(id: String): List[POD] = {
+          MongoContext.podCollection.find(MongoDBObject("parentId" -> id)).map(pod => PODConverter.fromBson(pod)).toList
+        }
+
       }
 }
