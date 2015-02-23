@@ -1,7 +1,11 @@
+<div  data-ng-controller="EmployeeCtrl">
+<table width="800px;">
+	<tr width="100%;" height="200px;" class = "employee_header">
+		<td  width="15%;">
+			<div ng-repeat = "ancestor in currentUser.ancestors">{{ancestor}} ></div>
 
-<table width="800px;" border="1">
-	<tr width="100%;">
-		<td  width="15%;">{{currentUser.ancestors.toString}}</td>
+
+		</td>
 		<td colspan="2">
 			Filter:
 			<form name="detailForm" role="form" class="form-horizontal">
@@ -17,12 +21,16 @@
                 <button data-ng-click="resetEmployeeFilter()"  class="btn btn-default btn-sm">Reset</button>
             </form>
 
-		<td width="30%;"><div ng-repeat = "role in currentUser.roles">{{role}}</div></td>
+		<td width="20%;">
+			<button type="button" class="btn btn-default btn-sm">
+				<span class="glyphicon glyphicon-user"></span><div ng-repeat = "role in currentUser.roles">{{role}}</div>
+			</button>
+		</td>
 
 
 	<tr ng-repeat = "empl in employees">
 		<td width="15%;" style = "background-color: ghostwhite; padding-right: 20px;">
-			<div>Select Foto on icon </div>
+			<div class = "image">Select Foto on icon </div>
 		</td>
 		<td colspan="2" class ="boarder">
 			<div id ="profile_attr"> Name: <div id = "profile_value">
@@ -33,7 +41,7 @@
 				<div ng-if="!empl._edit">{{empl.email}}</div>
 				<input type="text" ng-model="empl.email" ng-if="empl._edit">
 			</div></div>
-			<div id ="profile_attr"> Roles: <div id = "profile_value"><div ng-repeat = "role in empl.roles">role</div></div>
+			<div id ="profile_attr"> Roles: <div id = "profile_value"><div ng-repeat = "role in empl.roles">{{role}}</div></div>
 				<div id ="profile_attr">
 					<a href="{{empl.yammerUrl}}">Yammer profile</a>
 				</div></div>
@@ -52,5 +60,12 @@
 		</td>
 		<hr color="red"/>
 	</tr>
-
+	<tr height="300px;">
+		<td colspan="2"><td>
+		<td>
+			<a href = "/employee/newEmployee" class="btn btn-default btn-sm" >
+			<span class="glyphicon glyphicon-plus-sign"></span> Add employee</a>
+		</td>
+	</tr>
 </table>
+</div>

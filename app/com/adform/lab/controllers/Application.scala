@@ -15,7 +15,10 @@ object Application extends Controller with Secured{
   }
   def getURI(any: String): String = any match {
     case "main" => "/public/html/main.html"
+    case "newEmployee" => "/public/html/newEmployee.html"
     case "detail" => "/public/html/detail.html"
+    case "pods" => "/public/html/pods.html"
+    case "newPOD" => "/public/html/newPOD.html"
     case _ => "error"
   }
 

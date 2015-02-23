@@ -10,7 +10,7 @@ trait PODServiceComponent {
 
 
   trait PODService {
-    def getAncestorsById(id: String): List[String]
+    def getAncestorsById(id: String): Option[List[String]]
     def getPODById(id: String): Option[POD]
     def getPODs(params : Map[String, String]): List[POD]
     def createPOD(parentId: Option[String], name: String, location: String, description: String)

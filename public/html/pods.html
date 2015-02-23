@@ -1,0 +1,69 @@
+<div  data-ng-controller="PODCtrl">
+    <table width="800px;">
+        <tr width="100%;" height="200px;" class = "employee_header">
+            <td  width="15%;">
+                <div ng-repeat = "ancestor in currentUser.ancestors">{{ancestor}} ></div>
+
+
+            </td>
+            <td colspan="2">
+                Filter:
+                <form name="detailForm" role="form" class="form-horizontal">
+                    <select id="filterParams" name = "value" data-ng-model="filter.param" required>
+                        <option value="">Select filter params...</option>
+                        <option value="location">Location</option>
+                        <option value="name">Employee's name</option>
+                        <option value="email">Employee's email</option>
+                    </select>
+
+                    <input type = "text" name ="key"  data-ng-model="filter.value" required/>
+                    <button data-ng-click="filterEmployees()" data-ng-disabled="noChange() || detailForm.$invalid" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-search"></span></button>
+                    <button data-ng-click="resetEmployeeFilter()"  class="btn btn-default btn-sm">Reset</button>
+                </form>
+
+            <td width="20%;">
+                <button type="button" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-user"></span><div ng-repeat = "role in currentUser.roles">{{role}}</div>
+                </button>
+            </td>
+
+
+        <tr ng-repeat = "pod in pods">
+            <td width="15%;" style = "background-color: ghostwhite; padding-right: 20px;">
+                <div class = "image">Select Foto on icon </div>
+            </td>
+            <td colspan="2" class ="boarder">
+                <div id ="profile_attr"> Name: <div id = "profile_value">
+                    <div ng-if="!empl._edit">{{pod.name}}</div>
+                    <input type="text" ng-model="empl.name" ng-if="empl._edit">
+                </div></div>
+                <div id ="profile_attr"> Location:  <div id = "profile_value">
+                    <div ng-if="!empl._edit">{{pod.location}}</div>
+                    <input type="text" ng-model="empl.email" ng-if="empl._edit">
+                </div></div>
+                <div id ="profile_attr"> Parent: <div id = "profile_value">{{pod.parentId}}</div></div>
+
+            </td>
+            <td class="boarder" align="center">
+                <button data-ng-click="deleteEmployee(empl.id)" data-ng-show="empl.id" class="btn btn-default btn-sm">
+                    <span class="glyphicon glyphicon-remove"></span>Delete</button>
+                <!--<a href="@com.adform.lab.controllers.routes.EmployeeController.delete(empl.id.get)"  class="btn btn-default btn-sm" >
+                    <span class="glyphicon glyphicon-remove"></span> Remove</a>-->
+
+                <button data-ng-click="editEmployee(empl)" ng-if="!empl._edit" class="btn btn-default btn-sm" >
+                    <span class="glyphicon glyphicon-pencil"></span> Edit</button>
+
+                <button data-ng-click="submitEmployee(empl)" ng-if="empl._edit" class="btn btn-default btn-sm" >
+                    <span class="glyphicon glyphicon-ok"></span> Submit</button>
+            </td>
+            <hr color="red"/>
+        </tr>
+        <tr height="300px;">
+            <td colspan="2"><td>
+            <td>
+                <a href = "/pod/newPOD" class="btn btn-default btn-sm" >
+                    <span class="glyphicon glyphicon-plus-sign"></span> Add POD</a>
+            </td>
+        </tr>
+    </table>
+</div>

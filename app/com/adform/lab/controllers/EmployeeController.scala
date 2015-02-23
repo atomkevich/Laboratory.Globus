@@ -28,7 +28,7 @@ object EmployeeController extends Controller
         "email" -> employee.employeeProfile.email,
         "yammerUrl" -> employee.employeeProfile.yammerUrl,
         "location" -> employee.employeeProfile.location,
-        "role" -> Helper.convertRolesToString(employee.roles),
+        "roles" -> Helper.convertRolesToString(employee.roles),
         "parentId" -> employee.parent,
         "ancestors" -> employee.ancestors
       )
@@ -49,7 +49,7 @@ object EmployeeController extends Controller
 
   def createEmployee = Action(parse.json) {  request =>
     val email = (request.body \"email").asOpt[String]
-    val roles = (request.body \ "roles").asOpt[List[String]].getOrElse(List("Viewer"))
+    val roles = (request.body \ "roles").asOpt[String].getOrElse("Viewer").split(",").toList
     val parentId = (request.body\ "parentId").asOpt[String]
     if (email.isDefined) {
       employeeService.createNewEmployee(email.get, roles, parentId)
@@ -60,7 +60,6 @@ object EmployeeController extends Controller
   }
 
   def currentEmployee = WithAuthentication { employee => request =>
-    println("jjjj")
     Ok(Json.toJson(employee))
   }
 

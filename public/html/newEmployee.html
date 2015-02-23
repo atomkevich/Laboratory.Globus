@@ -1,0 +1,31 @@
+<div  data-ng-controller="EmployeeCardCtrl">
+    <h1> Create new employee</h1>
+    <table width="800px;">
+        <form name="createForm" role="form" class="form-horizontal">
+            <tr>
+                <td>
+                    <div id ="profile_attr">Email</div>
+                    <div id = "profile_value"><input type = "text" name ="key"  data-ng-model="employee.email" required/></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div id ="profile_attr">Roles</div>
+                    <div id = "profile_value"><input type = "text" name ="key"  data-ng-model="employee.roles"/></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div id ="profile_attr">POD Id</div>
+                    <div id = "profile_value"><input type = "text" name ="key"  data-ng-model="employee.parentId"/></div>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: right">
+                    <button data-ng-click="createEmployees()" data-ng-disabled="noChange() || createForm.$invalid" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-ok"></span>Add new </button>
+                </td>
+            </tr>
+        </form>
+
+    </table>
+</div>
