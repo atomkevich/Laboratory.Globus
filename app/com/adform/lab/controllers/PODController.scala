@@ -30,7 +30,7 @@ with PodRepositoryComponentImpl{
   }
 
 
-  def createPOD = Action(parse.json) { request =>
+  def createPOD = HasRole("Admin")(parse.json) { emplpyee => request =>
     val name = (request.body \ "name").asOpt[String]
     val location = (request.body \ "location").asOpt[String].getOrElse("")
     val description = (request.body \ "description").asOpt[String].getOrElse("")
@@ -44,7 +44,7 @@ with PodRepositoryComponentImpl{
     }
   }
 
-  def findPODs() = HasRole("PODKeeper"){employee => implicit request =>
+  def findPODs() = WithAuthentication {employee => request =>
     val params = request.queryString.map { case (k, v) => k -> v.mkString}
     var pods = podService.getPODs(params)
     if (!pods.isEmpty) {
@@ -54,7 +54,7 @@ with PodRepositoryComponentImpl{
     }
   }
 
-  def linkPODs = Action(parse.json) { request =>
+  def linkPODs = HasRole("Admin") (parse.json) { employee => request =>
     val firstPodId = (request.body\ "firstPodId").asOpt[String]
     val secondPodId = (request.body\ "secondPodId").asOpt[String]
     if (!firstPodId.isDefined || !secondPodId.isDefined) {
@@ -65,7 +65,7 @@ with PodRepositoryComponentImpl{
     }
   }
 
-  def getPODById(id: String) = Action {
+  def getPODById(id: String) = WithAuthentication { employee => request =>
     val pod: Option[POD] = podService.getPODById(id)
     if (pod.isDefined) {
       Ok(Json.toJson(pod.get))
@@ -74,7 +74,7 @@ with PodRepositoryComponentImpl{
     }
   }
 
-  def updatePODProfile = Action(parse.json) { request =>
+  def updatePODProfile = HasAnyRole("Admin", "PODLead")(parse.json) { employee => request =>
     val podId = (request.body\ "id").asOpt[String]
     val fields = request.body.asInstanceOf[JsObject].value.map { case (k, v) => k -> v.as[String]}.filter(t => !"id".equals(t._1))
     if (podId.isDefined) {
@@ -85,7 +85,7 @@ with PodRepositoryComponentImpl{
     }
   }
 
-  def getPODChilds(id: String) = Action {
+  def getPODChilds(id: String) = WithAuthentication {employee => request =>
     val pods = podService.getPODChildsById(id)
     if (!pods.isEmpty) {
       Ok(Json.toJson(pods))
@@ -94,7 +94,7 @@ with PodRepositoryComponentImpl{
     }
   }
 
-  def getPODLinks(id: String) = Action {
+  def getPODLinks(id: String) = WithAuthentication {employee => request =>
     val pods = podService.getPODLinksById(id)
     if (!pods.isEmpty) {
       Ok(Json.toJson(pods))
@@ -103,7 +103,7 @@ with PodRepositoryComponentImpl{
     }
   }
 
-  def getParentPOD(id: String) = Action {
+  def getParentPOD(id: String) = WithAuthentication {employee => request =>
     val pod = podService.getParentPOD(id)
     if (pod.isDefined) {
       Ok(Json.toJson(pod))
@@ -112,7 +112,4 @@ with PodRepositoryComponentImpl{
     }
   }
 
-  def newPod = HasAnyRole("PODKeeper", "PODLeader", "Admin") { employee => implicit request =>
-    Ok(views.html.pod())
-  }
 }

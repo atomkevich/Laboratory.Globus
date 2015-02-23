@@ -1,8 +1,8 @@
 
 <table width="800px;" border="1">
 	<tr width="100%;">
-		<td colspan="2" width="30%;">MMa > MMM > ...</td>
-		<td width="30%;">
+		<td  width="15%;">{{currentUser.ancestors.toString}}</td>
+		<td colspan="2">
 			Filter:
 			<form name="detailForm" role="form" class="form-horizontal">
 				<select id="filterParams" name = "value" data-ng-model="filter.param" required>
@@ -14,9 +14,10 @@
 
 				<input type = "text" name ="key"  data-ng-model="filter.value" required/>
 				<button data-ng-click="filterEmployees()" data-ng-disabled="noChange() || detailForm.$invalid" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-search"></span></button>
+                <button data-ng-click="resetEmployeeFilter()"  class="btn btn-default btn-sm">Reset</button>
             </form>
 
-		<td width="30%;"><div ng-repeat = "role in employee.roles">{{role}}</div></td>
+		<td width="30%;"><div ng-repeat = "role in currentUser.roles">{{role}}</div></td>
 
 
 	<tr ng-repeat = "empl in employees">
@@ -46,7 +47,7 @@
 			<button data-ng-click="editEmployee(empl)" ng-if="!empl._edit" class="btn btn-default btn-sm" >
 				<span class="glyphicon glyphicon-pencil"></span> Edit</button>
 
-			<button data-ng-click="submitEmployee(empl)" ng-if="empl._edit" class="glyphicon glyphicon-sm" >
+			<button data-ng-click="submitEmployee(empl)" ng-if="empl._edit" class="btn btn-default btn-sm" >
 				<span class="glyphicon glyphicon-ok"></span> Submit</button>
 		</td>
 		<hr color="red"/>

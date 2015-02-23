@@ -39,7 +39,7 @@ object EmployeeController extends Controller
     employeeService.findEmployeeByEmail(email)
   }
 
-  def deleteByIds() =  Action(parse.json){request =>
+  def deleteByIds() =  HasAnyRole("Admin")(parse.json){employee => request =>
       (request.body \ "ids").asOpt[List[String]].map {ids =>
       employeeService.deleteEmployees(ids)
       Ok("Successfully deleted")
@@ -47,8 +47,8 @@ object EmployeeController extends Controller
   }
 
 
-  def createEmployee = Action(parse.json) { request =>
-    val email = (request.body \ "email").asOpt[String]
+  def createEmployee = Action(parse.json) {  request =>
+    val email = (request.body \"email").asOpt[String]
     val roles = (request.body \ "roles").asOpt[List[String]].getOrElse(List("Viewer"))
     val parentId = (request.body\ "parentId").asOpt[String]
     if (email.isDefined) {
@@ -59,7 +59,12 @@ object EmployeeController extends Controller
     }
   }
 
-  def findEmployeeById(id: String) = Action {
+  def currentEmployee = WithAuthentication { employee => request =>
+    println("jjjj")
+    Ok(Json.toJson(employee))
+  }
+
+  def findEmployeeById(id: String) = WithAuthentication { employee => request =>
     val user: Option[Employee] = employeeService.getEmployeeById(id)
     if (user.isDefined) {
       Ok(Json.toJson(user))
@@ -71,14 +76,10 @@ object EmployeeController extends Controller
     def findEmployeeByParams = WithAuthentication { employee => implicit request =>
       val params = request.queryString.map { case (k, v) => k -> v.mkString}
       val employees = employeeService.getAllEmployees(params)
-      if (!employees.isEmpty) {
-        Ok(Json.toJson(employees))
-      } else {
-        NotFound
-      }
+      Ok(Json.toJson(employees))
     }
 
-  def assignRole = Action(parse.json) { request =>
+  def assignRole = HasRole("Admin")(parse.json) { employee => request =>
     val roles = (request.body \ "roles").asOpt[List[String]]
     val employeeId = (request.body\ "id").asOpt[String]
     if (roles.isDefined && employeeId.isDefined) {
@@ -89,7 +90,7 @@ object EmployeeController extends Controller
     }
   }
 
-  def updateEmployeeProfile = Action(parse.json) { request =>
+  def updateEmployeeProfile = HasAnyRole("PODKeeper", "PODLead", "User", "Admin") (parse.json) { employee => request =>
     val employeeId = (request.body\ "id").asOpt[String]
     val fields = request.body.asInstanceOf[JsObject].value.map { case (k, v) => k -> v.as[String]}.filter(t => !"id".equals(t._1))
     if (employeeId.isDefined) {
@@ -100,7 +101,7 @@ object EmployeeController extends Controller
     }
   }
 
-  def delete(id: String) = Action {
+  def delete(id: String) = HasAnyRole("PODKeeper", "PODLead", "User", "Admin")(parse.json) { employee => request =>
     if (!id.isEmpty) {
       employeeService.deleteEmployees(List(id))
       Ok("Successfully updated")
@@ -109,7 +110,7 @@ object EmployeeController extends Controller
     }
   }
 
-  def multiUpdate = Action(parse.json) {request =>
+  def multiUpdate = HasRole("Admin")(parse.json) {employee => request =>
     val updateParams = request.body.asInstanceOf[JsObject].value.map(param => (param._1, param._2.toString))
     if (updateParams.size == 1) {
       employeeService.multiUpdate(updateParams.head)
@@ -117,9 +118,5 @@ object EmployeeController extends Controller
     } else {
       BadRequest("Wrong params")
     }
-  }
-
-  def newEmployeePage = HasAnyRole("PODKeeper", "PODLeader", "Admin") { employee => implicit request =>
-    Ok(views.html.employee())
   }
 }

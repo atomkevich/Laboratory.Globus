@@ -1,6 +1,3 @@
-/*
- * Author: Sari Haj Hussein
- */
 var app = angular.module("app", ["ngResource", "ngRoute"])
 	.constant("apiUrl", "/api")
 	.config(["$routeProvider", function($routeProvider) {
@@ -53,11 +50,27 @@ app.controller("EmployeeCtrl", ["$scope", "$resource", "$routeParams", function(
 		}
 	);
 
+    $resource("/employees/current").query().$promise.then(
+      function(value) {
+          $scope.currentUser = value;
+      }
+    );
+    $scope.resetEmployeeFilter = function() {
+        var employees = $resource("/employees").query();
+        employees.query().$promise.then(
+            function( value ){
+                $scope.employees = value;
+            },
+            function( error ){
+                console.log("error")
+            });
+    }
 	$scope.filterEmployees = function() {
 		var findEmployees = $resource("/employees?" + $scope.filter.param + "=" + $scope.filter.value);
 		findEmployees.query().$promise.then(
 			function( value ){
 				$scope.employees = value;
+                $scope.$apply();
 			},
 			function( error ){
 				console.log("error")
@@ -71,13 +84,14 @@ app.controller("EmployeeCtrl", ["$scope", "$resource", "$routeParams", function(
 	}
 
 	$scope.deleteEmployee= function(id) {
-		console.log($routeParams.id)
 		 $resource("/employees/" + id).delete(); // a RESTful-capable resource object
-		$timeout(function() { $scope.go('/'); }); // go back to public/html/main.
+
 	}
 	$scope.submitEmployee = function(empl) {
 		console.log("submit")
-		empl._edit = false;
+        $resource("/employees/profile").update(empl); // $scope.celebrity comes from the detailForm in public/html/detail.html
+        //$timeout(function() { $scope.go('/'); }); // go back to public/html/main.html
+        empl._edit = false;
 	}
 }]);
 
