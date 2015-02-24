@@ -50,8 +50,8 @@ trait Secured {
     var parentId = (request.body \ "parentId").asOpt[String]
 
     val accessRoles = roles.map(role => role match {
-      case "PodLead"  => isSamePOD(id, parentId, employee)
-      case "PodKeeper"  => isSamePOD(id, parentId, employee)
+      case "PODLead"  => isSamePOD(id, parentId, employee)
+      case "PODKeeper"  => isSamePOD(id, parentId, employee)
       case "User" => (id.isDefined && (id == employee.id))
       case "Admin" => true
     }

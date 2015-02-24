@@ -44,5 +44,8 @@ trait PodRepositoryComponentImpl extends PodRepositoryComponent{
           MongoContext.podCollection.find(MongoDBObject("parentId" -> id)).map(pod => PODConverter.fromBson(pod)).toList
         }
 
+        override def deletePODs(ids: List[String]): Unit = {
+          MongoContext.podCollection.remove("_id" $in ids)
+        }
       }
 }

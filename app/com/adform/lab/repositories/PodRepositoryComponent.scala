@@ -17,5 +17,6 @@ trait PodRepositoryComponent {
     def getAncestorsById(id: String): Option[List[String]]
     def movePOD(id: String, parentId: String, ancestors: List[String])
     def getChildsById(id: String): List[POD]
+    def deletePODs(ids: List[String])
   }
 }

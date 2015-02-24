@@ -1,1 +1,79 @@
-ssssssssssssssssssssssssssssssssss
+<div  data-ng-controller="EmployeeCardCtrl">
+    <table width="800px;">
+        <form name="createForm" role="form" class="form-horizontal">
+            <tr width="100%;" height="200px;" class = "employee_header">
+                <td  width="15%;">
+                    <div id ="profile_attr"> Ancestors:</div>
+                    <div ng-repeat = "ancestor in currentUser.ancestors">{{ancestor}} ></div>
+                </td>
+                <td width="20%;">
+                    <button type="button" class="btn btn-default btn-sm"  style="float: right;">
+                        <span class="glyphicon glyphicon-user"></span><div ng-repeat = "role in currentUser.roles">{{role}}</div>
+                    </button>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <div id ="profile_attr">Name</div>
+                </td>
+                <td>
+                    <div id = "profile_value" ng-if="_edit"><input  width = "200px;" type = "text" name ="key"  data-ng-model="employee.profile.name" required/></div>
+                    <div id = "profile_value" ng-if="!_edit"> {{employee.profile.name}}</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div id ="profile_attr">Email</div>
+
+                </td>
+                <td>
+                    <div id = "profile_value" ng-if="_edit"><input  width = "200px;" type = "text" name ="key"  data-ng-model="employee.profile.email" required/></div>
+                    <div id = "profile_value" ng-if="!_edit"> {{employee.profile.email}}</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div id ="profile_attr">Location</div>
+                </td>
+                <td>
+                    <div id = "profile_value" ng-if="_edit"><input width = "200px;"  type = "text" name ="key"  data-ng-model="employee.profile.location" required/></div>
+                    <div id = "profile_value" ng-if="!_edit"> {{employee.profile.location|| "--"}}</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div id ="profile_attr">Roles</div>
+                </td>
+                <td>
+                    <div id = "profile_value" ng-if="_edit"><input width = "200px;" type = "text" name ="key"  data-ng-model="employee.roles"/></div>
+                    <div id = "profile_value" ng-if="!_edit"> <span ng-repeat="role in employee.roles">{{role}}<span ng-show=" ! $last ">,</span> </span></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div id ="profile_attr">POD Id</div>
+                </td>
+                <td>
+                    <div id = "profile_value"  ng-if="_edit"><input width = "200px;" type = "text" name ="key"  data-ng-model="employee.parentId"/></div>
+                    <div id = "profile_value" ng-if="!_edit">{{employee.parentId}}</div>
+                </td>
+            </tr>
+            <tr class = "error"><td colspan="2" >{{errorMessage||successMessage}}</td></tr>
+            <tr height = "300px;">
+                <td><div class = "image"/></td>
+                <td colspan="2" style="text-align: right">
+                    <button data-ng-click="editEmployee()" ng-if="!_edit" class="btn btn-default btn-sm" >
+                        <span class="glyphicon glyphicon-pencil"></span> Edit</button>
+
+                    <button data-ng-click="cancelEmployee()" ng-if="_edit" class="btn btn-default btn-sm" >
+                        <span class="glyphicon glyphicon-remove"></span> Cancel</button>
+
+                    <button data-ng-click="submitEmployee()" ng-if="_edit" class="btn btn-default btn-sm" >
+                        <span class="glyphicon glyphicon-ok"></span> Submit</button>
+                </td>
+            </tr>
+        </form>
+
+    </table>
+</div>

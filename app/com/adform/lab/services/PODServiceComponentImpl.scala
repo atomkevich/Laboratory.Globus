@@ -57,5 +57,9 @@ trait PODServiceComponentImpl extends PODServiceComponent{
       val pod = podRepository.getById(id)
       podRepository.getById(pod.get.parent)
     }
+
+    override def deletePODs(ids: List[String]): Unit = {
+      podRepository.deletePODs(ids)
+    }
   }
 }

@@ -13,6 +13,7 @@ trait PODServiceComponent {
     def getAncestorsById(id: String): Option[List[String]]
     def getPODById(id: String): Option[POD]
     def getPODs(params : Map[String, String]): List[POD]
+    def deletePODs(ids: List[String])
     def createPOD(parentId: Option[String], name: String, location: String, description: String)
     def updateProfile(podId:String, params:Map[String, String])
     def linkPOD(firstPodId: String, secondPodId: String) : Option[POD]

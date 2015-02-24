@@ -1,0 +1,50 @@
+<div  data-ng-controller="PODCardCtrl">
+
+    update
+    <table width="800px;">
+        <form name="createForm" role="form" class="form-horizontal">
+            <tr>
+                <td>
+                    <div id ="profile_attr">Name</div>
+                    <div id = "profile_value" ng-if="_edit"><input  type = "text" name ="key"  data-ng-model="pod.name" required/></div>
+                </td>
+                <td>
+                    <div id = "profile_value" ng-if="!_edit"> {{pod.name}}</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div id ="profile_attr">Location</div>
+                </td>
+                <td>
+                    <div id = "profile_value" ng-if="_edit"><input  type = "text" name ="key"  data-ng-model="pod.location" required/></div>
+                    <div id = "profile_value" ng-if="!_edit"> {{pod.location|| "--"}}</div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <div id ="profile_attr">POD Id</div>
+                </td>
+                <td>
+                    <div id = "profile_value"  ng-if="_edit"><input type = "text" name ="key"  data-ng-model="pod.parentId"/></div>
+                    <div id = "profile_value" ng-if="!_edit">{{pod.parentId}}</div>
+                </td>
+            </tr>
+            <tr><td colspan="2" style = "color: red;">{{errorMessage}}</td></tr>
+            <tr height = "300px;">
+                <td colspan="2" style="text-align: right">
+                    <button data-ng-click="editPOD()" ng-if="!_edit" class="btn btn-default btn-sm" >
+                        <span class="glyphicon glyphicon-pencil"></span> Edit</button>
+
+                    <button data-ng-click="cancelPOD()" ng-if="_edit" class="btn btn-default btn-sm" >
+                        <span class="glyphicon glyphicon-cansel"></span> Cancel</button>
+
+                    <button data-ng-click="submitPOD()" ng-if="_edit" class="btn btn-default btn-sm" >
+                        <span class="glyphicon glyphicon-ok"></span> Submit</button>
+                </td>
+            </tr>
+        </form>
+
+    </table>
+</div>

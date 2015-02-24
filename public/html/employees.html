@@ -7,7 +7,7 @@
 
 		</td>
 		<td colspan="2">
-			Filter:
+			<div id ="profile_attr">Filter:</div>
 			<form name="detailForm" role="form" class="form-horizontal">
 				<select id="filterParams" name = "value" data-ng-model="filter.param" required>
 					<option value="">Select filter params...</option>
@@ -20,46 +20,61 @@
 				<button data-ng-click="filterEmployees()" data-ng-disabled="noChange() || detailForm.$invalid" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-search"></span></button>
                 <button data-ng-click="resetEmployeeFilter()"  class="btn btn-default btn-sm">Reset</button>
             </form>
-
+		</td>
 		<td width="20%;">
-			<button type="button" class="btn btn-default btn-sm">
+			<button type="button" class="btn btn-default btn-sm"  style="float: right;">
 				<span class="glyphicon glyphicon-user"></span><div ng-repeat = "role in currentUser.roles">{{role}}</div>
 			</button>
 		</td>
 
-
+	</tr>
 	<tr ng-repeat = "empl in employees">
 		<td width="15%;" style = "background-color: ghostwhite; padding-right: 20px;">
-			,<a href ="employee/{{empl.id}}"></a> <div class = "image">Select Foto on icon </div></td>
-		</td>
+			<a href ="/employee/{{empl.id}}"><div class = "image"/></a>
+	    </td>
 		<td colspan="2" class ="boarder">
-			<div id ="profile_attr"> Name: <div id = "profile_value">
-				<div ng-if="!empl._edit">{{empl.name}}</div>
-				<input type="text" ng-model="empl.name" ng-if="empl._edit">
-			</div></div>
-			<div id ="profile_attr"> Email:  <div id = "profile_value">
-				<div ng-if="!empl._edit">{{empl.email}}</div>
-				<input type="text" ng-model="empl.email" ng-if="empl._edit">
-			</div></div>
-			<div id ="profile_attr"> Roles: <div id = "profile_value"><div ng-repeat = "role in empl.roles">{{role}}</div></div>
-				<div id ="profile_attr">
-					<a href="{{empl.yammerUrl}}">Yammer profile</a>
-				</div></div>
+			<div id ="profile_attr"> Name:
+				<div id = "profile_value" ng-if="!empl._edit">{{empl.profile.name}}</div>
+				<input id = "profile_value" type="text" ng-model="empl.profile.name" ng-if="empl._edit">
+			</div>
+
+			<div id ="profile_attr"> Email:
+					<div  id = "profile_value" ng-if="!empl._edit">{{empl.profile.email}}</div>
+					<input id = "profile_value" type="text" ng-model="empl.profile.email" ng-if="empl._edit">
+			</div>
+
+			<div id ="profile_attr"> Location:
+				<div  id = "profile_value" ng-if="!empl._edit">{{empl.profile.location|| "---"}}</div>
+				<input id = "profile_value" type="text" ng-model="empl.profile.location" ng-if="empl._edit">
+			</div>
+
+
+			<div id ="profile_attr"> Roles:
+				<div id = "profile_value"><span ng-repeat = "role in empl.roles">{{role}}<span ng-show=" ! $last ">,</span></span></div>
+			</div>
+
+			<div id ="profile_attr">Yammer profile:
+				<div id ="profile_url">
+						<a href="{{empl.profile.yammerUrl}}">{{empl.profile.yammerUrl}}</a>
+				</div>
+			</div>
 		</td>
 		<td class="boarder" align="center">
+
 			<button data-ng-click="deleteEmployee(empl.id)" data-ng-show="empl.id" class="btn btn-default btn-sm">
 				<span class="glyphicon glyphicon-remove"></span>Delete</button>
-			<!--<a href="@com.adform.lab.controllers.routes.EmployeeController.delete(empl.id.get)"  class="btn btn-default btn-sm" >
-				<span class="glyphicon glyphicon-remove"></span> Remove</a>-->
 
 			<button data-ng-click="editEmployee(empl)" ng-if="!empl._edit" class="btn btn-default btn-sm" >
 				<span class="glyphicon glyphicon-pencil"></span> Edit</button>
 
 			<button data-ng-click="submitEmployee(empl)" ng-if="empl._edit" class="btn btn-default btn-sm" >
 				<span class="glyphicon glyphicon-ok"></span> Submit</button>
+
 		</td>
 		<hr color="red"/>
 	</tr>
+
+
 	<tr height="300px;">
 		<td colspan="2"><td>
 		<td>

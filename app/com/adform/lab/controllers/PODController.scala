@@ -2,6 +2,7 @@ package com.adform.lab.controllers
 
 import com.adform.lab.controllers.Application._
 import com.adform.lab.controllers.Authentication._
+import com.adform.lab.controllers.EmployeeController._
 import com.adform.lab.converters.Helper
 import com.adform.lab.domain.{POD, Employee}
 import com.adform.lab.repositories.PodRepositoryComponentImpl
@@ -21,8 +22,11 @@ with PodRepositoryComponentImpl{
     override def writes(pod: POD): JsValue = {
       Json.obj(
         "id" -> pod.id,
-        "name" -> pod.podProfile.name,
-        "location" -> pod.podProfile.location,
+        "profile" -> Json.obj(
+          "name" -> pod.podProfile.name,
+          "location" -> pod.podProfile.location,
+          "description" -> pod.podProfile.description
+        ),
         "parentId" -> pod.parent,
         "ancestors" -> pod.ancestors
       )
@@ -67,6 +71,15 @@ with PodRepositoryComponentImpl{
       Ok(Json.toJson(pod.get))
     } else {
       NotFound
+    }
+  }
+
+  def delete(id: String) = HasAnyRole("PODKeeper", "PODLead", "User", "Admin")(parse.json) { employee => request =>
+    if (!id.isEmpty) {
+      podService.deletePODs(List(id))
+      Ok("Successfully updated")
+    } else {
+      BadRequest("Wrong params")
     }
   }
 

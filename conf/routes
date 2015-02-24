@@ -28,6 +28,7 @@ POST          /pods                     com.adform.lab.controllers.PODController
 GET           /pods/:id                 com.adform.lab.controllers.PODController.getPODById(id: String)
 GET           /pods                     com.adform.lab.controllers.PODController.findPODs
 PUT           /pods/profile             com.adform.lab.controllers.PODController.updatePODProfile
+DELETE        /pods/:id                 com.adform.lab.controllers.PODController.delete(id: String)
 # Map static resources from the /public folder to the /assets URL path
 GET           /assets/*file             controllers.Assets.at(path="/public", file)
 GET           /views/*any               com.adform.lab.controllers.Application.loadPublicHTML(any)

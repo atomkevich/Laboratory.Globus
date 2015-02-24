@@ -293,6 +293,7 @@ td.boarder {
 #profile_attr {
 	font-size: 16px;
 	font-weight: bold;
+
 	color: mediumblue;
 }
 #profile_value {
@@ -301,13 +302,24 @@ td.boarder {
 	display: inline;
 	color: #045f8c;
 }
+#profile_url {
+	font-size: 10px;
+	font-weight: inherit;
+	display: inline;
+	color: #045f8c;
+}
+#role_style {
+	font-size: 16px;
+	color: #045f8c;
+}
+div.pods {
+	content:url(/assets/images/pods.jpg);
+}
+
 div.image {
 	content:url(/assets/images/user.jpg);
 }​
 
-div.pods_image {
-     content:url(/assets/images/pods.jpg);
- }
 tr.employee_header {
 	padding-top: 100px;
 	padding-bottom: 100px;
@@ -316,4 +328,10 @@ tr.employee_header {
 tr.employee_footer {
 	padding-top: 100px;
 	padding-bottom: 100px;
+}
+tr.error {
+	color: red;
+	font-size: 16px;
+	height: 100px;
+	text-align: center;
 }

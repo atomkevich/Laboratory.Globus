@@ -6,7 +6,7 @@ package com.adform.lab.domain
 
 object EmployeeFilterField extends Enumeration {
   type EmployeeFilterField = Value
-  val LOCATION, NAME, ROLE, EMAIL = Value
+  val LOCATION, NAME, ROLE, EMAIL, YAMMERURL = Value
 
 
   def containsKey(key: String): Boolean = {

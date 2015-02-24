@@ -1,7 +1,5 @@
 package com.adform.lab.controllers
 
-import com.adform.lab.controllers.Application._
-import com.adform.lab.controllers.PODController._
 import com.adform.lab.converters.Helper
 import com.adform.lab.domain.Employee
 import com.adform.lab.repositories.{PodRepositoryComponentImpl, EmployeeRepositoryComponentImpl}
@@ -23,11 +21,13 @@ object EmployeeController extends Controller
   implicit val employeeWrites = new Writes[Employee] {
     override def writes(employee: Employee): JsValue = {
       Json.obj(
-         "id" -> employee.id,
-        "name" -> employee.employeeProfile.name,
-        "email" -> employee.employeeProfile.email,
-        "yammerUrl" -> employee.employeeProfile.yammerUrl,
-        "location" -> employee.employeeProfile.location,
+        "id" -> employee.id,
+        "profile" -> Json.obj(
+            "name" -> employee.employeeProfile.name,
+            "email" -> employee.employeeProfile.email,
+            "yammerUrl" -> employee.employeeProfile.yammerUrl,
+            "location" -> employee.employeeProfile.location
+        ),
         "roles" -> Helper.convertRolesToString(employee.roles),
         "parentId" -> employee.parent,
         "ancestors" -> employee.ancestors

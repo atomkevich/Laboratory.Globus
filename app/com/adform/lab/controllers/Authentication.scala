@@ -36,7 +36,7 @@ object Authentication extends Controller with Secured  with EmployeeServiceCompo
 
     def logout = WithAuthentication { employee => _ =>
       Cache.remove(employee.employeeProfile.email)
-      Redirect(routes.Application.index).withNewSession.flashing("success" -> "You've been logged out")
+      Redirect(routes.Application.index()).withNewSession.flashing("success" -> "You've been logged out")
     }
 
 

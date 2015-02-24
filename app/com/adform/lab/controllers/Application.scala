@@ -15,6 +15,8 @@ object Application extends Controller with Secured{
   }
   def getURI(any: String): String = any match {
     case "employees" => "/public/html/employees.html"
+    case "pod" => "/public/html/pod.html"
+    case "login" => "/app/views/login.scala.html"
     case "employee" => "/public/html/employee.html"
     case "newEmployee" => "/public/html/newEmployee.html"
     case "detail" => "/public/html/detail.html"
