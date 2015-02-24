@@ -301,3 +301,19 @@ td.boarder {
 	display: inline;
 	color: #045f8c;
 }
+div.image {
+	content:url(/assets/images/user.jpg);
+}​
+
+div.pods_image {
+     content:url(/assets/images/pods.jpg);
+ }
+tr.employee_header {
+	padding-top: 100px;
+	padding-bottom: 100px;
+ }
+
+tr.employee_footer {
+	padding-top: 100px;
+	padding-bottom: 100px;
+}

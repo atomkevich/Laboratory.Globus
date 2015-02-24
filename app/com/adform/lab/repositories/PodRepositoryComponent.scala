@@ -14,7 +14,7 @@ trait PodRepositoryComponent {
     def save(pod: POD): Unit
     def getById(id: String): Option[POD]
     def find(params: Map[String, String], skip: Int, limit: Int): List[POD]
-    def getAncestorsById(id: String): List[String]
+    def getAncestorsById(id: String): Option[List[String]]
     def movePOD(id: String, parentId: String, ancestors: List[String])
     def getChildsById(id: String): List[POD]
   }

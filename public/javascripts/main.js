@@ -1,17 +1,24 @@
 var app = angular.module("app", ["ngResource", "ngRoute"])
-	.constant("apiUrl", "/api")
 	.config(["$routeProvider", function($routeProvider) {
 		return $routeProvider.when("/", {
-			templateUrl: "/views/main",
+			templateUrl: "/views/employees",
 			controller: "EmployeeCtrl"
-		}).when("/create", {
-			templateUrl: "/views/detail",
-			controller: "CreateCtrl"
-	    }).when("/edit/:id", {
-			templateUrl: "/views/detail",
-			controller: "EditCtrl"
-	    }).otherwise({
-			redirectTo: "/"
+		}).when("/pods", {
+			templateUrl: "/views/pods",
+			controller: "PODCtrl"
+	    }).when("/employee/newEmployee", {
+			templateUrl: "/views/newEmployee",
+			controller: "EmployeeCardCtrl"
+	    }).when("/employee:id", {
+            templateUrl: "/views/employee",
+            controller: "EmployeeCardCtrl"
+        }).when("/pod/newPOD", {
+			templateUrl: "/views/newPOD",
+			controller: "PODCardCtrl"
+		}).when("/logout", {
+            controller: "LogoutCtrl"
+        }).otherwise({
+			redirectTo: "/login"
 		});
 	}
 	]).config([
@@ -24,19 +31,29 @@ var app = angular.module("app", ["ngResource", "ngRoute"])
 	}
 ]);
 
-// the global controller
-app.controller("AppCtrl", ["$scope", "$location", function($scope, $location) {
+app.controller("LogoutCtrl", ["$location", "$scope", "$resource" function($location, $scope, $resource) {
+    $location.path('/logout');
+    $scope.apply();
+    $resource("/logout").query();
+}]);
+
+app.controller("PODCtrl", ["$scope", "$resource", "$location", function($scope, $resource, $location) {
 	// the very sweet go function is inherited by all other controllers
 	$scope.go = function (path) {
 		$location.path(path);
 	};
-
-	$scope.save = function() {
-		var CreateCelebrity = $resource(apiUrl + "/celebrities/new"); // a RESTful-capable resource object
-		CreateCelebrity.save($scope.celebrity); // $scope.celebrity comes from the detailForm in public/html/detail.html
-		$timeout(function() { $scope.go('/'); }); // go back to public/html/main.html
-	};
+	var pods = $resource("/pods");
+	pods.query().$promise.then(
+		function( value ){
+			$scope.pods = value;
+		},
+		function( error ){
+			console.log("error")
+		}
+	);
 }]);
+
+
 
 // the list controller
 app.controller("EmployeeCtrl", ["$scope", "$resource", "$routeParams", function($scope, $resource, $routeParams) {
@@ -50,7 +67,9 @@ app.controller("EmployeeCtrl", ["$scope", "$resource", "$routeParams", function(
 		}
 	);
 
-    $resource("/employees/current").query().$promise.then(
+
+
+    $resource("/current").get().$promise.then(
       function(value) {
           $scope.currentUser = value;
       }
@@ -90,47 +109,45 @@ app.controller("EmployeeCtrl", ["$scope", "$resource", "$routeParams", function(
 	$scope.submitEmployee = function(empl) {
 		console.log("submit")
         $resource("/employees/profile").update(empl); // $scope.celebrity comes from the detailForm in public/html/detail.html
-        //$timeout(function() { $scope.go('/'); }); // go back to public/html/main.html
         empl._edit = false;
 	}
+
+
 }]);
 
-// the create controller
-app.controller("CreateCtrl", ["$scope", "$resource", "$timeout", "apiUrl", function($scope, $resource, $timeout, apiUrl) {
-	// to save a celebrity
-	$scope.save = function() {
-		var CreateCelebrity = $resource(apiUrl + "/celebrities/new"); // a RESTful-capable resource object
-		CreateCelebrity.save($scope.celebrity); // $scope.celebrity comes from the detailForm in public/html/detail.html
-		$timeout(function() { $scope.go('/'); }); // go back to public/html/main.html
+
+
+app.controller("EmployeeCardCtrl", ["$http", "$timeout", "$location", "$window", "$scope", "$resource", "$routeParams",
+                            function($http, $timeout, $location, $window, $scope, $resource) {
+	$scope.go = function (path) {
+		$location.path(path);
 	};
-}]);
 
-// the edit controller
-app.controller("EditCtrl", ["$scope", "$resource", "$routeParams", "$timeout", "apiUrl", function($scope, $resource, $routeParams, $timeout, apiUrl) {
-	var ShowCelebrity = $resource(apiUrl + "/celebrities/:id", {id:"@id"}); // a RESTful-capable resource object
-	if ($routeParams.id) {
-		// retrieve the corresponding celebrity from the database
-		// $scope.celebrity.id.$oid is now populated so the Delete button will appear in the detailForm in public/html/detail.html
-		$scope.celebrity = ShowCelebrity.get({id: $routeParams.id});
-		$scope.dbContent = ShowCelebrity.get({id: $routeParams.id}); // this is used in the noChange function
+	$scope.createEmployees = function() {
+        $http({
+            url:'/employees',
+            method : 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: $scope.employee
+        }).success(function(){
+            $location.path("/");
+            $scope.apply();
+        }).error(function(err){
+            $scope.errorMessage = err;
+        });
+
 	}
-	
-	// decide whether to enable or not the button Save in the detailForm in public/html/detail.html 
-	$scope.noChange = function() {
-		return angular.equals($scope.celebrity, $scope.dbContent);
+}]);
+
+app.controller("PODCardCtrl", ["$http", "$routeParams", "$timeout", "$location", "$scope", "$resource", function($http, $timeout, $location, $scope, $resource) {
+	$scope.go = function (path) {
+		$location.path(path);
 	};
 
-	// to update a celebrity
-	$scope.save = function() {
-		var UpdateCelebrity = $resource(apiUrl + "/celebrities/" + $routeParams.id); // a RESTful-capable resource object
-		UpdateCelebrity.save($scope.celebrity); // $scope.celebrity comes from the detailForm in public/html/detail.html
-		$timeout(function() { $scope.go('/'); }); // go back to public/html/main.html
-	};
-	
-	// to delete a celebrity
-	$scope.delete = function() {
-		var DeleteCelebrity = $resource(apiUrl + "/celebrities/" + $routeParams.id); // a RESTful-capable resource object
-		DeleteCelebrity.delete();
-		$timeout(function() { $scope.go('/'); }); // go back to public/html/main.html
-	};
+	$scope.createPOD = function() {
+		$resource("/pods").save($scope.pod);
+		$timeout(function() { $scope.go('/pods'); });
+	}
 }]);

@@ -23,8 +23,10 @@ trait EmployeeServiceComponentImpl extends EmployeeServiceComponent {
 
     override def createNewEmployee(email: String, roles: List[String], parentId: Option[String]): Unit = {
       if (parentId.isDefined) validateRole(roles, parentId.get)
-      val employeeProfile: EmployeeProfile = employeeProfileService.getEmployeeProfileByEmail(email)
-      val ancestors = if (parentId.isDefined) podService.getAncestorsById(parentId.get):+ parentId.get else List()
+      val employeeProfile = employeeProfileService.getEmployeeProfileByEmail(email)
+      val ancestors: List[String] = parentId.map(id =>
+        podService.getAncestorsById(parentId.get).map(_ :+ id).getOrElse(List())
+      ).getOrElse(List())
       val employeeRoles = Helper.convertToRoles(roles)
       employeeRepository.save(Employee(Helper.generateId, employeeProfile, parentId.getOrElse(null), employeeRoles, ancestors))
     }

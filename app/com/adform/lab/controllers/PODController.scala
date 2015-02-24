@@ -47,11 +47,7 @@ with PodRepositoryComponentImpl{
   def findPODs() = WithAuthentication {employee => request =>
     val params = request.queryString.map { case (k, v) => k -> v.mkString}
     var pods = podService.getPODs(params)
-    if (!pods.isEmpty) {
-      Ok(Json.toJson(pods))
-    } else {
-      NotFound
-    }
+    Ok(Json.toJson(pods))
   }
 
   def linkPODs = HasRole("Admin") (parse.json) { employee => request =>

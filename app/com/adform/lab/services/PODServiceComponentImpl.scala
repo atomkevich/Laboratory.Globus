@@ -12,11 +12,13 @@ trait PODServiceComponentImpl extends PODServiceComponent{
   override def podService: PODService = new PODServiceImpl
 
   class PODServiceImpl extends PODService {
-    override def getAncestorsById(id: String): List[String] = podRepository.getAncestorsById(id)
+    override def getAncestorsById(id: String): Option[List[String]] = podRepository.getAncestorsById(id)
 
     override def createPOD(parentId: Option[String], name: String, location: String, description: String): Unit = {
       val podProfile = PODProfile(name, location, description)
-      val ancestors = if (parentId.isDefined) podRepository.getAncestorsById(parentId.get) :+ parentId.get else List()
+      val ancestors: List[String] = parentId.map(id =>
+         podRepository.getAncestorsById(parentId.get).map(_ :+ id).getOrElse(List())
+      ).getOrElse(List())
       podRepository.save(POD(Helper.generateId, podProfile, ancestors, parentId.getOrElse(null)))
     }
 

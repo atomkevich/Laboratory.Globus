@@ -3,12 +3,12 @@ package com.adform.lab.services
 import com.adform.lab.domain.EmployeeProfile
 import net.liftweb.json._
 
-import scalaj.http. Http
+import scalaj.http.Http
 
 /**
  * Created by Alina_Tamkevich on 2/9/2015.
  */
-trait EmployeeProfileServiceComponentImpl extends  EmployeeProfileServiceComponent{
+trait EmployeeProfileServiceComponentImpl extends EmployeeProfileServiceComponent {
   override def employeeProfileService: EmployeeProfileService = new EmployeeYammerProfileService
 
   class EmployeeYammerProfileService extends EmployeeProfileService {
@@ -21,16 +21,17 @@ trait EmployeeProfileServiceComponentImpl extends  EmployeeProfileServiceCompone
         .header("Host", "www.yammer.com")
         .header("Content-Type", "application/json")
 
-     implicit val formats = DefaultFormats
-      val parsed: JValue = parse(request.asString.body)
-      EmployeeProfile(
-        (parsed \ "name").values.asInstanceOf[String],
-        (parsed \ "email").values.asInstanceOf[String],
-        (parsed \ "location").values.asInstanceOf[String],
-        (parsed \ "web_url").values.asInstanceOf[String],
+      implicit val formats = DefaultFormats
+      val parsed = parse(request.asString.body).toOpt.map(x => EmployeeProfile(
+        (x \ "name").values.asInstanceOf[String],
+        (x \ "email").values.asInstanceOf[String],
+        (x \ "location").values.asInstanceOf[String],
+        (x \ "web_url").values.asInstanceOf[String],
         null
-      )
+      ))
+      parsed.getOrElse(EmployeeProfile(null, email, null, null, null))
     }
   }
 
 }
+
