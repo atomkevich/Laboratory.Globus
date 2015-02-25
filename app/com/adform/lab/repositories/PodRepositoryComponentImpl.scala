@@ -24,8 +24,7 @@ trait PodRepositoryComponentImpl extends PodRepositoryComponent{
         }
 
         override def getById(id: String): Option[POD] = {
-          val pod = MongoContext.podCollection.findOne(MongoDBObject("_id" -> id))
-          Option(PODConverter.fromBson(pod.get))
+           MongoContext.podCollection.findOne(MongoDBObject("_id" -> id)).map(item => PODConverter.fromBson(item))
         }
 
         override def find(params: Map[String, String], skip: Int, limit: Int): List[POD] = {

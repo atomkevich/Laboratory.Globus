@@ -1,0 +1,83 @@
+<div  data-ng-controller="PODCardCtrl">
+
+    <table width="800px;">
+        <form name="createForm" role="form" class="form-horizontal">
+            <tr width="100%;" height="200px;" class = "employee_header">
+                <td  width="15%;">
+                    <div id ="profile_attr"> Ancestors:</div>
+                    <div ng-repeat = "ancestor in currentUser.ancestors">{{ancestor}} ></div>
+                </td>
+                <td width="20%;">
+                    <button type="button" class="btn btn-default btn-sm"  style="float: right;">
+                        <span class="glyphicon glyphicon-user"></span><div ng-repeat = "role in currentUser.roles">{{role}}</div>
+                    </button>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <div id ="profile_attr">Name</div>
+
+                </td>
+                <td>
+                    <div id = "profile_value" ng-if="_edit"><input  type = "text" name ="key"  data-ng-model="pod.profile.name" required/></div>
+                    <div id = "profile_value" ng-if="!_edit"> {{pod.profile.name}}</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div id ="profile_attr">Location</div>
+                </td>
+                <td>
+                    <div id = "profile_value" ng-if="_edit"><input  type = "text" name ="key"  data-ng-model="pod.profile.location" required/></div>
+                    <div id = "profile_value" ng-if="!_edit"> {{pod.profile.location|| "--"}}</div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div id ="profile_attr">Description</div>
+                </td>
+                <td>
+                    <div id = "profile_value" ng-if="_edit"><input  type = "text" name ="key"  data-ng-model="pod.profile.description" required/></div>
+                    <div id = "profile_value" ng-if="!_edit"> {{pod.profile.description|| "--"}}</div>
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    <div id ="profile_attr">POD Id</div>
+                </td>
+                <td>
+                    <div id = "profile_value"  ng-if="_edit"><input type = "text" name ="key"  data-ng-model="pod.parentId"/></div>
+                    <div id = "profile_value" ng-if="!_edit">{{pod.parentId}}</div>
+                </td>
+            </tr>
+            <tr><td colspan="2" class = "error">{{errorMessage || successMessage}}</td></tr>
+            <tr height = "300px;">
+                <td colspan="2" style="text-align: right">
+                    <button data-ng-click="editPOD()" ng-if="!_edit" class="btn btn-default btn-sm" >
+                        <span class="glyphicon glyphicon-pencil"></span> Edit</button>
+
+                    <button data-ng-click="cancelPOD()" ng-if="_edit" class="btn btn-default btn-sm" >
+                        <span class="glyphicon glyphicon-cansel"></span> Cancel</button>
+
+                    <button data-ng-click="submitPOD()" ng-if="_edit" class="btn btn-default btn-sm" >
+                        <span class="glyphicon glyphicon-ok"></span> Submit</button>
+                </td>
+            </tr>
+            <tr>
+                <td><div id = "profile_attr">Parent POD :</div></td>
+                <td><div id = "profile_value"> {{parentPOD.profile.name}}</div></td>
+            <tr>
+            <tr>
+                <td><div id = "profile_attr">Linked PODs: </div></td>
+                <td><span id = "profile_value" ng-repeat ="link in linkedPODs">{{link.profile.name}}<span ng-show=" ! $last ">,</span></span></td>
+            </tr>
+            <tr>
+                <td><div id = "profile_attr">Child PODs : </div></td>
+                <td><span id = "profile_value" ng-repeat ="child in childPODs">{{child.profile.name}}<span ng-show=" ! $last ">,</span></span></td>
+            </tr>
+        </form>
+
+    </table>
+</div>

@@ -6,6 +6,7 @@ import com.adform.lab.domain.{EmployeeProfile, Role, Employee}
  * Created by HP on 08.02.2015.
  */
 trait EmployeeRepositoryComponent {
+
   def employeeRepository: EmployeeRepository
 
 

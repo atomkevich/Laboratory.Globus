@@ -50,7 +50,6 @@ object Helper {
 
   def fromBasicDBListToList(dbList: MongoDBList):List[String] = {
     dbList.map(_.toString).toList
-    //List(dbList.toArray()).flatten.asInstanceOf[List[String]]
   }
 
   def createSearchQuery(params: Map[String, String]): Map[String, String] = {

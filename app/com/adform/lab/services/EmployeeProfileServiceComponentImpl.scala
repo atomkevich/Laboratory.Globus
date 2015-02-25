@@ -22,11 +22,11 @@ trait EmployeeProfileServiceComponentImpl extends EmployeeProfileServiceComponen
         .header("Content-Type", "application/json")
 
       implicit val formats = DefaultFormats
-      val parsed = parse(request.asString.body).toOpt.map(x => EmployeeProfile(
-        (x \ "name").values.asInstanceOf[String],
-        (x \ "email").values.asInstanceOf[String],
-        (x \ "location").values.asInstanceOf[String],
-        (x \ "web_url").values.asInstanceOf[String],
+      val parsed = parse(request.asString.body).toOpt.map(body => EmployeeProfile(
+        (body \ "name").values.asInstanceOf[String],
+        (body \ "email").values.asInstanceOf[String],
+        (body \ "location").values.asInstanceOf[String],
+        (body \ "web_url").values.asInstanceOf[String],
         null
       ))
       parsed.getOrElse(EmployeeProfile(null, email, null, null, null))

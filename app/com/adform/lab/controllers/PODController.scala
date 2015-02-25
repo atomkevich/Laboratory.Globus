@@ -6,7 +6,7 @@ import com.adform.lab.controllers.EmployeeController._
 import com.adform.lab.converters.Helper
 import com.adform.lab.domain.{POD, Employee}
 import com.adform.lab.repositories.PodRepositoryComponentImpl
-import play.api.libs.json.{JsObject, JsValue, Writes, Json}
+import play.api.libs.json._
 import play.api.mvc._
 import com.adform.lab.services.{PODServiceComponentImpl, PODServiceComponent}
 
@@ -50,7 +50,7 @@ with PodRepositoryComponentImpl{
 
   def findPODs() = WithAuthentication {employee => request =>
     val params = request.queryString.map { case (k, v) => k -> v.mkString}
-    var pods = podService.getPODs(params)
+    val pods = podService.getPODs(params)
     Ok(Json.toJson(pods))
   }
 
@@ -85,7 +85,8 @@ with PodRepositoryComponentImpl{
 
   def updatePODProfile = HasAnyRole("Admin", "PODLead")(parse.json) { employee => request =>
     val podId = (request.body\ "id").asOpt[String]
-    val fields = request.body.asInstanceOf[JsObject].value.map { case (k, v) => k -> v.as[String]}.filter(t => !"id".equals(t._1))
+    val fields = (request.body\ "profile").asInstanceOf[JsObject].value
+      .map{case(k,v) => (k -> (if (v.isInstanceOf[JsString]) v.as[String] else null))}
     if (podId.isDefined) {
       podService.updateProfile(podId.get, fields.toMap)
       Ok("Successfully updated")

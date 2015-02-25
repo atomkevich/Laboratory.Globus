@@ -57,9 +57,7 @@ trait EmployeeServiceComponentImpl extends EmployeeServiceComponent {
     override def updateProfile(id: String, fields: Map[String, String]): Unit = {
       val employee = employeeRepository.get(id)
      if (!employee.isDefined) throw new IllegalArgumentException("employee " + id + "is not present ")
-     val profile = employee.get.employeeProfile
-      //val updatedProfile = EmployeeProfile(fields.get("name").getOrElse(profile.name), fields.get("location").getOrElse(profile.location))
-      //updatedProfile.customAttribute = profile.customAttribute ++ fields
+      val profile = employee.get.employeeProfile
       val default = Map("name" -> profile.name, "location" -> profile.location) ++ Helper.defaultEmployeeProfileAttrubute(fields)
       val custom = profile.customAttribute ++ Helper.getCustomAttribute(fields)
       val result: Map[String, Any] = default ++ Map("custom_attribute" -> custom)

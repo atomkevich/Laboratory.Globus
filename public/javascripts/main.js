@@ -12,16 +12,16 @@ var app = angular.module("app", ["ngResource", "ngRoute"])
 	    }).when("/employee/:id", {
             templateUrl: "/views/employee",
             controller: "EmployeeCardCtrl"
-        }).when("/pod/:id", {
-			templateUrl: "/views/pod",
-			controller: "PODCardCtrl"
-		}).when("/pod/newPOD", {
+        }).when("/pod/newPOD", {
 			templateUrl: "/views/newPOD",
 			controller: "PODCardCtrl"
-		}).when("/logout", {
-			templateUrl: "/views/login",
-            controller: "LogoutCtrl"
-        }).otherwise({
+		}).when("/pod/:id", {
+			templateUrl: "/views/pod",
+			controller: "PODCardCtrl"
+		}).when("/admin", {
+			templateUrl: "/views/admin",
+			controller: "PODCtrl"
+		}).otherwise({
 			redirectTo: "/login"
 		});
 	}
@@ -35,23 +35,8 @@ var app = angular.module("app", ["ngResource", "ngRoute"])
 	}
 ]);
 
-app.controller("LogoutCtrl", ["$http", "$timeout", "$location", "$window", "$scope", "$resource", "$routeParams",
-	function($http, $timeout, $location, $window, $scope, $resource) {
-		console.log($location);
-		var ss = $http({
-			url:'/logout',
-			method : 'GET',
-			headers: {
-				'Content-Type': 'application/json'
-			}
-		}).success(function(){
-			console.log("success")
-		}).error(function(err){
-			console.log("error")
-		});
-}]);
 
-app.controller("PODCtrl", ["$scope", "$resource","$http",  "$location", function($scope, $resource, $http, $location) {
+app.controller("PODCtrl", ["$location", "$scope", "$rootScope", "$http", "$resource", "$routeParams", function($location, $scope, $rootScope, $http, $resource, $routeParams) {
 	console.log($location);
 	// the very sweet go function is inherited by all other controllers
 	$scope.go = function (path) {
@@ -67,7 +52,10 @@ app.controller("PODCtrl", ["$scope", "$resource","$http",  "$location", function
 		}
 	);
 
+
+
 	$scope.resetPODFilter = function() {
+		$scope.filter = null;
 		var employees = $resource("/pods").query().$promise.then(
 			function( value ){
 				$scope.pods = value;
@@ -76,6 +64,7 @@ app.controller("PODCtrl", ["$scope", "$resource","$http",  "$location", function
 				console.log("error")
 			});
 	}
+
 	$scope.filterPODs = function() {
 		var findPOD = $resource("/pods?" + $scope.filter.param + "=" + $scope.filter.value);
 		findPOD.query().$promise.then(
@@ -109,20 +98,18 @@ app.controller("PODCtrl", ["$scope", "$resource","$http",  "$location", function
 		}).error(function(err){
 			$scope.errorMessage = err;
 		});
-		/*	 $resource("/employees/" + id).delete(); // a RESTful-capable resource object*/
-
 	}
 	$scope.submitPOD = function(pod) {
-		pod.profile.id = pod.id;
+	//	pod.profile.id = pod.id;
 		$http({
 			url:'/pods/profile',
 			method : 'PUT',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			data: pod.profile
+			data: pod
 		}).success(function(){
-			$location.path("/podsView");
+			$scope.successMessage = "This POD was updated successful!!";
 		}).error(function(err){
 			$scope.errorMessage = err;
 		});
@@ -132,7 +119,6 @@ app.controller("PODCtrl", ["$scope", "$resource","$http",  "$location", function
 
 
 
-// the list controller
 app.controller("EmployeeCtrl", ["$location", "$scope", "$rootScope", "$http", "$resource", "$routeParams", function($location, $scope, $rootScope, $http, $resource, $routeParams) {
 	console.log($location);
 	var employees = $resource("/employees");
@@ -154,6 +140,7 @@ app.controller("EmployeeCtrl", ["$location", "$scope", "$rootScope", "$http", "$
       }
     );
     $scope.resetEmployeeFilter = function() {
+		$scope.filter = null;
         var employees = $resource("/employees").query().$promise.then(
             function( value ){
                 $scope.employees = value;
@@ -196,18 +183,16 @@ app.controller("EmployeeCtrl", ["$location", "$scope", "$rootScope", "$http", "$
 		}).error(function(err){
 			$scope.errorMessage = err;
 		});
-	/*	 $resource("/employees/" + id).delete(); // a RESTful-capable resource object*/
-
 	}
 	$scope.submitEmployee = function(empl) {
-		empl.profile.id = empl.id;
+		//empl.profile.id = empl.id;
 		$http({
 			url:'/employees/profile',
 			method : 'PUT',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			data: empl.profile
+			data: empl
 		}).success(function(){
 			$location.path("/");
 		}).error(function(err){
@@ -257,16 +242,16 @@ app.controller("EmployeeCardCtrl", ["$http", "$timeout", "$location", "$window",
 
     $scope.submitEmployee = function() {
 		$scope.submitEmployee = function() {
-			$scope.employee.profile.id = $scope.employee.id;
+			//$scope.employee.profile.id = $scope.employee.id;
 			$http({
 				url:'/employees/profile',
 				method : 'PUT',
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				data: $scope.employee.profile
+				data: $scope.employee
 			}).success(function(){
-				$scope.successMessage = "Employee was success updated.";
+				$scope.successMessage = "Employee was successful updated."
 				$scope._edit = false;
 			}).error(function(err){
 				$scope.errorMessage = err;
@@ -275,22 +260,35 @@ app.controller("EmployeeCardCtrl", ["$http", "$timeout", "$location", "$window",
 	}
 }]);
 
-app.controller("PODCardCtrl", ["$http", "$routeParams", "$timeout", "$location", "$scope", "$resource", "$routeParams", function($http, $timeout, $location, $scope, $resource, $routeParams) {
+
+app.controller("PODCardCtrl", ["$http", "$timeout", "$location", "$window", "$scope", "$resource", "$routeParams",
+	function($http, $timeout, $location, $window, $scope, $resource, $routeParams) {
 	if ($routeParams.id) {
 		$scope.pod = $resource("/pods/:id", {id:"@id"}).get({id: $routeParams.id});
+		$scope.parentPOD = $resource("/parent/:id", {id:"@id"}).get({id: $routeParams.id});
+		$resource("/linked/:id", {id:"@id"}).query({id: $routeParams.id}).$promise.then(
+			function(value) {
+				$scope.linkedPODs = value;
+			}
+		);
+		$resource("/childs/:id", {id:"@id"}).query({id: $routeParams.id}).$promise.then(
+			function(value) {
+				$scope.childPODs = value;
+			}
+		);
 	}
-	console.log($location);
 
-	$scope.createEmployees = function() {
+
+	$scope.createPOD = function() {
 		$http({
 			url:'/pods',
 			method : 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			data: $scope.employee
+			data: $scope.pod
 		}).success(function(){
-			$location.path("/");
+			$location.path("/podsView");
 			$scope.apply();
 		}).error(function(err){
 			$scope.errorMessage = err;
@@ -305,7 +303,20 @@ app.controller("PODCardCtrl", ["$http", "$routeParams", "$timeout", "$location",
 	}
 
 	$scope.submitPOD = function() {
-		$resource("/pods/profile").update($scope.pod);
-		$scope._edit = false;
+	//	$scope.pod.profile.id = $scope.pod.id;
+		$http({
+			url:'/pods/profile',
+			method : 'PUT',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			data: $scope.pod
+		}).success(function(){
+			$scope._edit = false;
+			$scope.successMessage = "Employee was success updated.";
+		}).error(function(err){
+			$scope.errorMessage = err;
+		});
+
 	}
 }]);

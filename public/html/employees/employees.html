@@ -61,7 +61,7 @@
 		</td>
 		<td class="boarder" align="center">
 
-			<button data-ng-click="deleteEmployee(empl.id)" data-ng-show="empl.id" class="btn btn-default btn-sm">
+			<button data-ng-click="deleteEmployee(empl.id)" ng-if="!empl._edit" data-ng-show="empl.id" class="btn btn-default btn-sm">
 				<span class="glyphicon glyphicon-remove"></span>Delete</button>
 
 			<button data-ng-click="editEmployee(empl)" ng-if="!empl._edit" class="btn btn-default btn-sm" >

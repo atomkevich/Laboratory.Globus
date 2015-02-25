@@ -27,6 +27,9 @@ GET           /current                  com.adform.lab.controllers.EmployeeContr
 POST          /pods                     com.adform.lab.controllers.PODController.createPOD
 GET           /pods/:id                 com.adform.lab.controllers.PODController.getPODById(id: String)
 GET           /pods                     com.adform.lab.controllers.PODController.findPODs
+GET           /parent/:id               com.adform.lab.controllers.PODController.getParentPOD(id: String)
+GET           /linked/:id               com.adform.lab.controllers.PODController.getPODLinks(id: String)
+GET           /childs/:id               com.adform.lab.controllers.PODController.getPODChilds(id: String)
 PUT           /pods/profile             com.adform.lab.controllers.PODController.updatePODProfile
 DELETE        /pods/:id                 com.adform.lab.controllers.PODController.delete(id: String)
 # Map static resources from the /public folder to the /assets URL path

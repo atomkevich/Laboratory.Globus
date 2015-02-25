@@ -12,8 +12,8 @@
                     <select id="filterParams" name = "value" data-ng-model="filter.param" required>
                         <option value="">Select filter params...</option>
                         <option value="location">Location</option>
-                        <option value="name">Employee's name</option>
-                        <option value="email">Employee's email</option>
+                        <option value="name">POD's name</option>
+                        <option value="description">POD's description</option>
                     </select>
 
                     <input type = "text" name ="key"  data-ng-model="filter.value" required/>
@@ -53,10 +53,8 @@
 
             </td>
             <td class="boarder" align="center">
-                <button data-ng-click="deletePOD(pod.id)" data-ng-show="pod.id" class="btn btn-default btn-sm">
+                <button data-ng-click="deletePOD(pod.id)" ng-if="!pod._edit" data-ng-show="pod.id" class="btn btn-default btn-sm">
                     <span class="glyphicon glyphicon-remove"></span>Delete</button>
-                <!--<a href="@com.adform.lab.controllers.routes.EmployeeController.delete(empl.id.get)"  class="btn btn-default btn-sm" >
-                    <span class="glyphicon glyphicon-remove"></span> Remove</a>-->
 
                 <button data-ng-click="editPOD(pod)" ng-if="!pod._edit" class="btn btn-default btn-sm" >
                     <span class="glyphicon glyphicon-pencil"></span> Edit</button>

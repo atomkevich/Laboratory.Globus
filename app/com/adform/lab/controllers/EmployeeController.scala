@@ -40,14 +40,15 @@ object EmployeeController extends Controller
   }
 
   def deleteByIds() =  HasAnyRole("Admin")(parse.json){employee => request =>
-      (request.body \ "ids").asOpt[List[String]].map {ids =>
-      employeeService.deleteEmployees(ids)
-      Ok("Successfully deleted")
-    } getOrElse(BadRequest("Bad request. Id of employee for delete is not present."))
+
+      (request.body \ "ids").asOpt[List[String]].map {
+         ids => employeeService.deleteEmployees(ids)
+         Ok("Successfully deleted")
+      } getOrElse(BadRequest("Bad request. Id of employee for delete is not present."))
   }
 
 
-  def createEmployee = Action(parse.json) {  request =>
+  def createEmployee = HasAnyRole("PODKeeper", "PODLead", "Admin")(parse.json) {  employee => request =>
     val email = (request.body \"email").asOpt[String]
     val roles = (request.body \ "roles").asOpt[String].getOrElse("Viewer").split(",").toList
     val parentId = (request.body\ "parentId").asOpt[String]
@@ -91,7 +92,9 @@ object EmployeeController extends Controller
 
   def updateEmployeeProfile = HasAnyRole("PODKeeper", "PODLead", "User", "Admin") (parse.json) { employee => request =>
     val employeeId = (request.body\ "id").asOpt[String]
-    val fields = request.body.asInstanceOf[JsObject].value.map { case (k, v) => k -> v.as[String]}.filter(t => !"id".equals(t._1))
+    val fields = (request.body\ "profile").asInstanceOf[JsObject].value
+      .map{case(k,v) => (k -> (if (v.isInstanceOf[JsString]) v.as[String] else null))}
+
     if (employeeId.isDefined) {
       employeeService.updateProfile(employeeId.get, fields.toMap)
       Ok("Successfully updated")
