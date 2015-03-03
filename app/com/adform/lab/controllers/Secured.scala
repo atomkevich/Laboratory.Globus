@@ -47,7 +47,7 @@ trait Secured {
 
   def checkAccess(request: Request[JsValue], roles: List[String], employee: Employee) = {
     val id = (request.body \ "id").asOpt[String]
-    var parentId = (request.body \ "parentId").asOpt[String]
+    val parentId = (request.body \ "parentId").asOpt[String]
 
     val accessRoles = roles.map(role => role match {
       case "PODLead"  => isSamePOD(id, parentId, employee)

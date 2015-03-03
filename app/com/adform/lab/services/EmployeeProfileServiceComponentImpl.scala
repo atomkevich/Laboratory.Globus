@@ -1,9 +1,11 @@
 package com.adform.lab.services
 
+import com.adform.lab.converters.EmployeeConverter
 import com.adform.lab.domain.EmployeeProfile
 import net.liftweb.json._
-
-import scalaj.http.Http
+import play.api.libs.json.JsValue
+import scala.util.{Failure, Try, Success}
+import scalaj.http. Http
 
 /**
  * Created by Alina_Tamkevich on 2/9/2015.
@@ -22,14 +24,10 @@ trait EmployeeProfileServiceComponentImpl extends EmployeeProfileServiceComponen
         .header("Content-Type", "application/json")
 
       implicit val formats = DefaultFormats
-      val parsed = parse(request.asString.body).toOpt.map(body => EmployeeProfile(
-        (body \ "name").values.asInstanceOf[String],
-        (body \ "email").values.asInstanceOf[String],
-        (body \ "location").values.asInstanceOf[String],
-        (body \ "web_url").values.asInstanceOf[String],
-        null
-      ))
-      parsed.getOrElse(EmployeeProfile(null, email, null, null, null))
+      EmployeeConverter.toEmployeeProfile(request.asString.body) match {
+        case Some(employeeProfile) => employeeProfile
+        case None => EmployeeProfile("anonymous", email, " - ", " - ", null)
+      }
     }
   }
 

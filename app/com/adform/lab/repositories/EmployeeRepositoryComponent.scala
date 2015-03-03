@@ -1,6 +1,6 @@
 package com.adform.lab.repositories
 
-import com.adform.lab.domain.{EmployeeProfile, Role, Employee}
+import com.adform.lab.domain.Employee
 
 /**
  * Created by HP on 08.02.2015.

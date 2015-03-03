@@ -41,27 +41,37 @@ trait EmployeeServiceComponentImpl extends EmployeeServiceComponent {
       employeeRepository.get(id)
     }
 
-    def validateRole(roles: List[String], parentId : String) ={
+    def validateRole(roles: List[String], parentId : String): Either[Unit, String] ={
       if (!employeeRepository.getEmployeesByRoleAndPod(roles.filter(role => ("PODKeeper".equals(role) || "PODLead".equals(role))), parentId).isEmpty) {
-        throw new IllegalArgumentException("Pod " + parentId + "already has PODKeeper or PODLead")
+        Right("Pod " + parentId + "already has PODKeeper or PODLead")
+      } else {
+        Left()
       }
     }
 
-    override def assignRoles(id: String, roles: List[String]): Unit = {
-      val employee = employeeRepository.get(id)
-      validateRole(roles, employee.get.parent)
-      val employeeRoles = Helper.convertToRoles(roles)
-      employeeRepository.assignRole(id, roles)
+    override def assignRoles(id: String, roles: List[String]): Either[Unit, String] = {
+       employeeRepository.get(id) match {
+        case Some(employee) => {
+          validateRole(roles, employee.parent) match {
+            case Left(_) => Left(employeeRepository.assignRole(id, roles))
+            case Right(err) => Right(err)
+          }
+        }
+        case None => Right("Employee %s is not present".format(id))
+      }
     }
 
-    override def updateProfile(id: String, fields: Map[String, String]): Unit = {
-      val employee = employeeRepository.get(id)
-     if (!employee.isDefined) throw new IllegalArgumentException("employee " + id + "is not present ")
-      val profile = employee.get.employeeProfile
-      val default = Map("name" -> profile.name, "location" -> profile.location) ++ Helper.defaultEmployeeProfileAttrubute(fields)
-      val custom = profile.customAttribute ++ Helper.getCustomAttribute(fields)
-      val result: Map[String, Any] = default ++ Map("custom_attribute" -> custom)
-      employeeRepository.updateProfile(id, result)
+    override def updateProfile(id: String, fields: Map[String, String]) : Either[String, String] = {
+      employeeRepository.get(id) match {
+        case Some(employee) => {
+          val default = Map("name" -> employee.employeeProfile.name, "location" -> employee.employeeProfile.location) ++ Helper.defaultEmployeeProfileAttrubute(fields)
+          val custom = employee.employeeProfile.customAttribute ++ Helper.getCustomAttribute(fields)
+          val result: Map[String, Any] = default ++ Map("custom_attribute" -> custom)
+          employeeRepository.updateProfile(id, result)
+          Left("Success updated.")
+        }
+        case None => Right("Employee %s is not present".format(id))
+      }
     }
 
     override def deleteEmployees(ids: List[String]): Unit = {

@@ -10,9 +10,9 @@ import play.Play
  */
 
 object MongoContext {
-  val config = Play.application().configuration()
+  //val config = Play.application().configuration()
 
-  val podDB = MongoConnection(config.getString("mongo.host"))(config.getString("mongo.dbName"))
+  val podDB = MongoConnection("EPBYMINW1130")("POD")
 
   val employeeCollection = podDB("employees")
   val podCollection = podDB("pod")

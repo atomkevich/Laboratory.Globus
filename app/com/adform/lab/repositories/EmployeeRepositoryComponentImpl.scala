@@ -25,19 +25,17 @@ trait EmployeeRepositoryComponentImpl extends  EmployeeRepositoryComponent{
     }
 
     override def save(employee: Employee): Unit = {
-      val document = EmployeeConverter.toBson(employee)
-      MongoContext.employeeCollection.save(document)
+      MongoContext.employeeCollection.save(EmployeeConverter.toBson(employee))
     }
 
     override def find(search: Map[String, String], skip: Int, limit: Int): List[Employee] = {
-      val employees = MongoContext.employeeCollection.find(search).skip(skip).limit(limit)
-      (for (employee <- employees) yield EmployeeConverter.fromBson(employee)).toList
+       MongoContext.employeeCollection.find(search).skip(skip).limit(limit)
+        .map(employee => EmployeeConverter.fromBson(employee)).toList
     }
 
     override def getEmployeesByRoleAndPod(role: List[String], parentId: String): List[Employee] = {
-      val searchQuery: DBObject = ("role" $in role) ++ ("parentId" -> parentId)
-      val employees = MongoContext.employeeCollection.find(searchQuery)
-      employees.map(employee => EmployeeConverter.fromBson(employee)).toList
+      MongoContext.employeeCollection.find(("role" $in role) ++ ("parentId" -> parentId))
+        .map(employee => EmployeeConverter.fromBson(employee)).toList
     }
 
     override def assignRole(id: String, role: List[String]): Unit = {
@@ -52,8 +50,9 @@ trait EmployeeRepositoryComponentImpl extends  EmployeeRepositoryComponent{
       MongoContext.employeeCollection.remove("_id" $in ids)
     }
 
-    override def multiUpdate(updateQuery: (String, String)): Unit = {
+    override def multiUpdate(updateQuery: (String, String)) = {
       MongoContext.employeeCollection.update(MongoDBObject.empty, $set(updateQuery), multi = true)
+
     }
 
     override def getByEmail(email: String): Option[Employee] = {
