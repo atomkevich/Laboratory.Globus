@@ -10,11 +10,10 @@ case class Employee(id: Option[String],
                     parent: String,
                     roles : List[Role],
                     ancestors: List[String]) {
-  def hasRole(role: String) = Helper.convertRolesToString(this.roles).contains(role)
 
-  def hasAnyRole(roles: String*) =
-    !Helper.convertRolesToString(this.roles).intersect(roles).isEmpty
+  def hasRole(role: String) = this.roles.map(_.name).contains(role)
 
-  def hasAllRoles(roles: String*) =
-    Helper.convertRolesToString(this.roles) forall (this.roles.contains)
+  def hasAnyRole(roles: String*) = !this.roles.map(_.name).intersect(roles).isEmpty
+
+  def hasAllRoles(roles: String*) = this.roles.map(_.name) forall (this.roles.contains)
 }

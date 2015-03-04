@@ -19,32 +19,18 @@ object Helper {
 
 
   def convertToRoles(roles: List[String]): List[Role] = {
-      if (!Option(roles).isDefined || roles.isEmpty) {
-        List(Viewer)
-      } else {
-        roles map {
-          case "Admin" => AdminRole
-          case "PODLead" => PODLeadRole
-          case "PODKeeper" => PODKeeperRole
-          case roleName: String => CustomRole(roleName)
-          case _ => Viewer
-        }
-      }
-    }
-
-  def convertRolesToString(roles: List[Role]): List[String] = {
-    if (!Option(roles).isDefined || roles.isEmpty) {
-      List("Viewer")
-    } else {
-      roles map {
-        case AdminRole => "Admin"
-        case PODLeadRole => "PODLead"
-        case PODKeeperRole => "PODKeeper"
-        case  CustomRole(roleName) => roleName
-        case _ => "Viewer"
+    roles match  {
+      case List() => List(Viewer)
+      case rolesList =>  rolesList map {
+        case "Admin" => AdminRole
+        case "PODLead" => PODLeadRole
+        case "PODKeeper" => PODKeeperRole
+        case roleName: String => CustomRole(roleName)
+        case _ => Viewer
       }
     }
   }
+
 
   def generateId = Option(ObjectId.get().toString)
 

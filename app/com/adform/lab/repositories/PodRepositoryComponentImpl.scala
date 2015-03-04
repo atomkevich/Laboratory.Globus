@@ -15,8 +15,8 @@ trait PodRepositoryComponentImpl extends PodRepositoryComponent{
 
       class PodRepositoryImpl extends  PodRepository {
         override def getAncestorsById(id: String): Option[List[String]] = {
-           MongoContext.podCollection.findOne(MongoDBObject("_id" -> id)).map(pod => pod.get("ancestors").asInstanceOf[BasicDBList])
-            .map(ancestors =>  Helper.fromBasicDBListToList(ancestors))
+           MongoContext.podCollection.findOne(MongoDBObject("_id" -> id))
+             .map(pod => pod.get("ancestors").asInstanceOf[BasicDBList]).map(ancestors =>  Helper.fromBasicDBListToList(ancestors))
         }
 
         override def save(pod: POD): Unit = {

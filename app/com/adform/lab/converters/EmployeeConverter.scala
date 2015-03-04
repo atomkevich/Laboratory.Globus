@@ -18,7 +18,7 @@ object EmployeeConverter {
       "_id" -> employee.id,
       "parentId" -> employee.parent,
       "ancestors" -> employee.ancestors,
-      "roles" -> Helper.convertRolesToString(employee.roles),
+      "roles" -> employee.roles.map(_.name),
       "profile" -> MongoDBObject(
         "name" -> employee.employeeProfile.name,
         "email" -> employee.employeeProfile.email,

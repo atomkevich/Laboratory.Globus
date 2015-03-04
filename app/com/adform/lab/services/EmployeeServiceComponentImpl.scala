@@ -21,14 +21,30 @@ trait EmployeeServiceComponentImpl extends EmployeeServiceComponent {
   class EmployeeServiceImpl extends EmployeeService {
 
 
-    override def createNewEmployee(email: String, roles: List[String], parentId: Option[String]): Unit = {
-      if (parentId.isDefined) validateRole(roles, parentId.get)
-      val employeeProfile = employeeProfileService.getEmployeeProfileByEmail(email)
-      val ancestors: List[String] = parentId.map(id =>
-        podService.getAncestorsById(parentId.get).map(_ :+ id).getOrElse(List())
-      ).getOrElse(List())
-      val employeeRoles = Helper.convertToRoles(roles)
-      employeeRepository.save(Employee(Helper.generateId, employeeProfile, parentId.getOrElse(null), employeeRoles, ancestors))
+    override def createNewEmployee(email: String, roles: List[String], parentId: Option[String]): Either[Unit, String] = {
+      val  ancestors: Either[List[String], String] = parentId match {
+        case Some(id) => {
+          val validate = validateRole(roles, id)
+           if (validate isRight) Right(validate.right.get)
+           podService.getAncestorsById(id) match {
+             case Some(ansList) => Left(ansList :+ id)
+             case None => Left(List())
+          }
+        }
+        case None => Left(List())
+      }
+
+      ancestors match {
+        case Left(ancestors) =>  Left(employeeRepository.save(Employee(
+          Helper.generateId,
+          employeeProfileService.getEmployeeProfileByEmail(email),
+          parentId.getOrElse(null),
+          Helper.convertToRoles(roles),
+          ancestors
+        )))
+        case Right(err) => Right(err)
+      }
+
     }
 
     override def getAllEmployees(params: Map[String, String]): List[Employee] = {
@@ -41,11 +57,10 @@ trait EmployeeServiceComponentImpl extends EmployeeServiceComponent {
       employeeRepository.get(id)
     }
 
-    def validateRole(roles: List[String], parentId : String): Either[Unit, String] ={
-      if (!employeeRepository.getEmployeesByRoleAndPod(roles.filter(role => ("PODKeeper".equals(role) || "PODLead".equals(role))), parentId).isEmpty) {
-        Right("Pod " + parentId + "already has PODKeeper or PODLead")
-      } else {
-        Left()
+    def validateRole(roles: List[String], parentId : String): Either[Unit, String] = {
+      employeeRepository
+        .getEmployeesByRoleAndPod(roles.filter(role => ("PODKeeper".equals(role) || "PODLead".equals(role))), parentId) match {
+        case List() => Right("Pod " + parentId + "already has PODKeeper or PODLead")
       }
     }
 

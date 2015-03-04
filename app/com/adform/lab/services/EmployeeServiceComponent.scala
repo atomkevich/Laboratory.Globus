@@ -14,8 +14,8 @@ trait EmployeeServiceComponent {
     def createNewEmployee(email : String, role: List[String], parentId: Option[String])
     def getAllEmployees(params: Map[String, String]): List[Employee]
     def getEmployeeById(id: String): Option[Employee]
-    def assignRoles(id: String, roles: List[String])
-    def updateProfile(id: String, fields: Map[String, String]): Either[Employee, String]
+    def assignRoles(id: String, roles: List[String]): Either[Unit, String]
+    def updateProfile(id: String, fields: Map[String, String]): Either[String, String]
     def deleteEmployees(ids: List[String])
     def findEmployeeByEmail(email: String): Option[Employee]
 

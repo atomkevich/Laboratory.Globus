@@ -28,7 +28,7 @@ object EmployeeController extends Controller
             "yammerUrl" -> employee.employeeProfile.yammerUrl,
             "location" -> employee.employeeProfile.location
         ),
-        "roles" -> Helper.convertRolesToString(employee.roles),
+        "roles" -> employee.roles.map(_.name),
         "parentId" -> employee.parent,
         "ancestors" -> employee.ancestors
       )
@@ -48,7 +48,7 @@ object EmployeeController extends Controller
   }
 
 
-  def createEmployee = HasAnyRole("PODKeeper", "PODLead", "Admin")(parse.json) {  employee => request =>
+  def createEmployee = Action(parse.json) {  request =>
     val email = (request.body \"email").asOpt[String]
     val roles = (request.body \ "roles").asOpt[String].getOrElse("Viewer").split(",").toList
     val parentId = (request.body\ "parentId").asOpt[String]

@@ -25,7 +25,7 @@ trait EmployeesApi {
           "yammerUrl" -> employee.employeeProfile.yammerUrl,
           "location" -> employee.employeeProfile.location
         ),
-        "roles" -> Helper.convertRolesToString(employee.roles),
+        "roles" -> employee.roles.map(_.name),
         "parentId" -> employee.parent,
         "ancestors" -> employee.ancestors
       )
