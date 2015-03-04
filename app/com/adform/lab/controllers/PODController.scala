@@ -59,7 +59,11 @@ with PodRepositoryComponentImpl{
     val secondPodId = (request.body\ "secondPodId").asOpt[String]
     if (!firstPodId.isDefined || !secondPodId.isDefined) {
       val parentPod = podService.linkPOD(firstPodId.get, secondPodId.get)
-      Ok(Json.toJson(parentPod.get))
+      parentPod match {
+        case Left(pod) => Ok(Json.toJson(pod))
+        case Right(err) => BadRequest(err)
+      }
+
     } else {
       BadRequest("Wrong params")
     }

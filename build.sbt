@@ -26,6 +26,9 @@ libraryDependencies ++= {
     "com.typesafe.akka"   %%  "akka-actor"    % akkaV,
     "com.typesafe.akka"   %%  "akka-testkit"  % akkaV   % "test",
     "org.specs2"          %%  "specs2-core"   % "2.3.11" % "test",
-    "org.scalaz"          %%  "scalaz-core"   % "7.1.0"
+    "org.scalaz"          %%  "scalaz-core"   % "7.1.0",
+    "org.mindrot" % "jbcrypt" % "0.3m",
+    "org.scalatest" % "scalatest_2.11" % "2.2.1" % "test",
+    "org.mockito" % "mockito-all" % "1.8.4"
   )
 }

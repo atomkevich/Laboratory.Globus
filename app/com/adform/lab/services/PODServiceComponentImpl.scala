@@ -14,12 +14,19 @@ trait PODServiceComponentImpl extends PODServiceComponent{
   class PODServiceImpl extends PODService {
     override def getAncestorsById(id: String): Option[List[String]] = podRepository.getAncestorsById(id)
 
-    override def createPOD(parentId: Option[String], name: String, location: String, description: String): Unit = {
-      val podProfile = PODProfile(name, location, description)
-      val ancestors: List[String] = parentId.map(id =>
-         podRepository.getAncestorsById(parentId.get).map(_ :+ id).getOrElse(List())
-      ).getOrElse(List())
-      podRepository.save(POD(Helper.generateId, podProfile, ancestors, parentId.getOrElse(null)))
+    override def createPOD(parentId: Option[String], name: String, location: String, description: String): Either[POD, String] = {
+
+      val ancestors: List[String] = parentId match {
+        case Some(id) => podRepository.getAncestorsById(id) match {
+          case Some(ancestors) => ancestors :+ id
+          case None => List()
+        }
+        case None => List()
+      }
+
+      val createdPOD = POD(Helper.generateId, PODProfile(name, location, description), ancestors, parentId.getOrElse(null))
+      podRepository.save(createdPOD)
+      Left(createdPOD)
     }
 
     override def getPODById(id: String): Option[POD] = podRepository.getById(id)
@@ -30,18 +37,30 @@ trait PODServiceComponentImpl extends PODServiceComponent{
       podRepository.find(Helper.createSearchQuery(params), (page-1)*size, page*size)
     };
 
-    override def updateProfile(podId: String, params: Map[String, String]): Unit = {
-      val pod = podRepository.getById(podId)
-      if (!pod.isDefined) throw new IllegalArgumentException("pod " + podId + "is not present")
-      val profile = pod.get.podProfile
-      val updateProfile = Map("name" -> profile.name, "location" -> profile.location, "description" -> profile.description) ++ params
-      podRepository.updateProfile(podId, updateProfile)
+    override def updateProfile(podId: String, params: Map[String, String]): Either[String, String] = {
+      podRepository.getById(podId) match {
+        case Some(pod) => {
+          val updateProfile = Map("name" -> pod.podProfile.name, "location" -> pod.podProfile.location, "description" -> pod.podProfile.description) ++ params
+          podRepository.updateProfile(podId, updateProfile)
+          Left("POD Profile was updated successfully")
+        }
+        case None => Right("Pod with id" + podId + "doesn't exists")
+      }
     }
 
-    override def linkPOD(firstPodId: String, secondPodId: String): Option[POD] = {
-      val firstPOD = podRepository.getById(firstPodId)
-      podRepository.movePOD(secondPodId, firstPOD.get.parent, firstPOD.get.ancestors)
-      podRepository.getById(firstPOD.get.parent)
+    override def linkPOD(firstPodId: String, secondPodId: String): Either[POD, String] = {
+     podRepository.getById(firstPodId) match {
+       case Some(firstPOD) => {
+         podRepository.movePOD(secondPodId, firstPOD.parent, firstPOD.ancestors)
+         podRepository.getById(firstPOD.parent) match {
+           case Some(pod) => Left(pod)
+           case None => Right("Cannot link pods { %s, %s}".format(firstPodId, secondPodId))
+         }
+       }
+       case None => Right("Cannot link pods because pod " + firstPodId + " doesn't exists")
+     }
+
+
     }
 
     override def getPODChildsById(id: String): List[POD] = {
@@ -49,8 +68,7 @@ trait PODServiceComponentImpl extends PODServiceComponent{
     }
 
     override def getPODLinksById(id: String): List[POD] = {
-      val pod = podRepository.getById(id)
-      pod.map(x => podRepository.getChildsById(x.parent)).get
+      podRepository.getById(id).map(x => podRepository.getChildsById(x.parent)).getOrElse(List())
     }
 
     override def getParentPOD(id: String): Option[POD] = {

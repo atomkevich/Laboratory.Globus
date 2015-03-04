@@ -37,6 +37,7 @@ trait PodRepositoryComponentImpl extends PodRepositoryComponent{
 
         override def movePOD(id: String, parentId: String, ancestors: List[String]): Unit = {
           MongoContext.podCollection.update(MongoDBObject("_id" -> id), $set("parentId" -> parentId, "ancestors" -> ancestors))
+          MongoContext.podCollection.update(MongoDBObject("parentId" -> id), $set("ancestors" -> (ancestors :+ id)))
         }
 
         override def getChildsById(id: String): List[POD] = {

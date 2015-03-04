@@ -16,6 +16,7 @@ object EmployeeConverter {
   def toBson(employee: Employee): DBObject = {
     MongoDBObject(
       "_id" -> employee.id,
+      "password" -> employee.password,
       "parentId" -> employee.parent,
       "ancestors" -> employee.ancestors,
       "roles" -> employee.roles.map(_.name),
@@ -39,6 +40,7 @@ object EmployeeConverter {
     )
     Employee(
       Option(document.as[String]("_id")),
+      document.as[String]("password"),
       employeeProfile,
       document.as[String]("parentId"),
       Helper.convertToRoles(Helper.fromBasicDBListToList(document.as[MongoDBList]("roles"))),

@@ -48,12 +48,15 @@ trait EmployeesApi {
           respondWithMediaType(`application/json`) {
             entity(as[JsObject]) { requestObj =>
               val email = (requestObj \"email").asOpt[String]
+              val password = (requestObj \ "password").asOpt[String].getOrElse("pass")
               val roles = (requestObj \ "roles").asOpt[String].getOrElse("Viewer").split(",").toList
               val parentId = (requestObj \ "parentId").asOpt[String]
               complete {
                 if (email.isDefined) {
-                  employeeService.createNewEmployee(email.get, roles, parentId)
-                  "Created"
+                  employeeService.createNewEmployee(email.get, password, roles, parentId) match {
+                    case Left(message) => message
+                    case Right(err) => err
+                  }
                 } else {
                   "Missing params. Please enter employee's email."
                 }

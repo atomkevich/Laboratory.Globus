@@ -6,6 +6,7 @@ import com.adform.lab.converters.Helper
  * Created by Alina_Tamkevich on 2/11/2015.
  */
 case class Employee(id: Option[String],
+                    password: String,
                     employeeProfile : EmployeeProfile,
                     parent: String,
                     roles : List[Role],

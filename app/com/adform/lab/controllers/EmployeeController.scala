@@ -50,10 +50,11 @@ object EmployeeController extends Controller
 
   def createEmployee = Action(parse.json) {  request =>
     val email = (request.body \"email").asOpt[String]
+    val password = (request.body \ "password").asOpt[String].getOrElse("pass")
     val roles = (request.body \ "roles").asOpt[String].getOrElse("Viewer").split(",").toList
     val parentId = (request.body\ "parentId").asOpt[String]
     if (email.isDefined) {
-      employeeService.createNewEmployee(email.get, roles, parentId)
+      employeeService.createNewEmployee(email.get, password, roles, parentId)
       Created
     } else {
       BadRequest("Missing params. Please enter employee's email.")

@@ -5,6 +5,7 @@ import com.adform.lab.converters.Helper
 import com.adform.lab.domain._
 import org.bson.types.ObjectId
 import com.adform.lab.repositories.EmployeeRepositoryComponent
+import org.mindrot.jbcrypt.BCrypt
 
 /**
  * Created by HP on 08.02.2015.
@@ -21,7 +22,7 @@ trait EmployeeServiceComponentImpl extends EmployeeServiceComponent {
   class EmployeeServiceImpl extends EmployeeService {
 
 
-    override def createNewEmployee(email: String, roles: List[String], parentId: Option[String]): Either[Unit, String] = {
+    override def createNewEmployee(email: String, password: String, roles: List[String], parentId: Option[String]): Either[Employee, String] = {
       val  ancestors: Either[List[String], String] = parentId match {
         case Some(id) => {
           val validate = validateRole(roles, id)
@@ -33,15 +34,19 @@ trait EmployeeServiceComponentImpl extends EmployeeServiceComponent {
         }
         case None => Left(List())
       }
-
       ancestors match {
-        case Left(ancestors) =>  Left(employeeRepository.save(Employee(
-          Helper.generateId,
-          employeeProfileService.getEmployeeProfileByEmail(email),
-          parentId.getOrElse(null),
-          Helper.convertToRoles(roles),
-          ancestors
-        )))
+        case Left(ancestors) => {
+          val savedEmployee = Employee(
+            Helper.generateId,
+            BCrypt.hashpw(password, BCrypt.gensalt()),
+            employeeProfileService.getEmployeeProfileByEmail(email),
+            parentId.getOrElse(null),
+            Helper.convertToRoles(roles),
+            ancestors
+          )
+          employeeRepository.save(savedEmployee)
+          Left(savedEmployee)
+        }
         case Right(err) => Right(err)
       }
 

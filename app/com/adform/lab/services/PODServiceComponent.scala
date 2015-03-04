@@ -14,9 +14,9 @@ trait PODServiceComponent {
     def getPODById(id: String): Option[POD]
     def getPODs(params : Map[String, String]): List[POD]
     def deletePODs(ids: List[String])
-    def createPOD(parentId: Option[String], name: String, location: String, description: String)
-    def updateProfile(podId:String, params:Map[String, String])
-    def linkPOD(firstPodId: String, secondPodId: String) : Option[POD]
+    def createPOD(parentId: Option[String], name: String, location: String, description: String): Either[POD, String]
+    def updateProfile(podId:String, params:Map[String, String]): Either[String, String]
+    def linkPOD(firstPodId: String, secondPodId: String) : Either[POD, String]
     def getPODChildsById(id: String): List[POD]
     def getPODLinksById(id: String): List[POD]
     def getParentPOD(id: String): Option[POD]

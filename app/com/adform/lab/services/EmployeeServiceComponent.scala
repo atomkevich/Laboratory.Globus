@@ -11,7 +11,7 @@ trait EmployeeServiceComponent {
 
   trait EmployeeService {
     def multiUpdate(update: (String, String))
-    def createNewEmployee(email : String, role: List[String], parentId: Option[String])
+    def createNewEmployee(email : String, password: String, role: List[String], parentId: Option[String]): Either[Employee, String]
     def getAllEmployees(params: Map[String, String]): List[Employee]
     def getEmployeeById(id: String): Option[Employee]
     def assignRoles(id: String, roles: List[String]): Either[Unit, String]
