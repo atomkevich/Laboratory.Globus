@@ -35,7 +35,8 @@ object Helper {
   def generateId = Option(ObjectId.get().toString)
 
   def fromBasicDBListToList(dbList: MongoDBList):List[String] = {
-    dbList.map(_.toString).toList
+    if (Option(dbList).isDefined)
+       dbList.map(_.toString).toList else null
   }
 
   def createSearchQuery(params: Map[String, String]): Map[String, String] = {

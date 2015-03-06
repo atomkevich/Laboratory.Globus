@@ -16,7 +16,7 @@ class PodRepositoryTest extends FlatSpec with Matchers  with BeforeAndAfter with
 
 
   before {
-    adformPod = POD(Some("1"), PODProfile("Adform", "Minsk", "!!!!!!"), null, null)
+    adformPod = POD(Some("1"), PODProfile("Adform", "Minsk", "!!!!!!"), List(), "")
     epamPod = POD(Some("2"), PODProfile("Epam", "Minsk", "!!!!!!"), List("1"), "1")
     facebook = POD(Some("3"), PODProfile("Facebook", "Minsk", "!!!!!!"), List("1"), "1")
     google = POD(Some("4"), PODProfile("Google", "Minsk", "!!!!!!"), List("1", "3"), "3")

@@ -1,14 +1,11 @@
 package com.adform.lab.controllers.spray
 
+
 import akka.actor.Actor
-import com.adform.lab.domain.POD
-import spray.routing.HttpService
+import spray.routing._
 
 
-/**
- * Created by v.bazarevsky on 3/1/15.
- */
-class HttpServiceActor extends Actor with Api {
+class HttpServiceActor extends Actor with ServiceApi {
   // the HttpService trait defines only one abstract member, which
   // connects the services environment to the enclosing actor or test
   def actorRefFactory = context
@@ -19,8 +16,10 @@ class HttpServiceActor extends Actor with Api {
   def receive = runRoute(route)
 }
 
-sealed trait Api extends HttpService with ApplicationContext
+ trait ServiceApi extends HttpService with ApplicationContext
         with EmployeesApi with PODApi{
-  val route = employeeRoute ~ podRoute
+
+  implicit def executionContext = actorRefFactory.dispatcher
+  val route =  podRoute
 
 }

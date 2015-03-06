@@ -1,11 +1,12 @@
 package com.adform.lab.controllers.spray
 
-import com.adform.lab.domain.POD
+import com.adform.lab.domain.{PODProfile, POD}
 import com.adform.lab.services.PODServiceComponent
 import play.api.libs.json._
 import spray.http.MediaTypes._
 import spray.httpx.PlayJsonSupport._
 import spray.routing.HttpService
+import play.api.libs.functional.syntax._
 
 
 /**
@@ -28,6 +29,19 @@ trait PODApi {
       )
     }
   }
+/*
+  implicit val podReaders = new Reads[POD] {
+    override def reads(json: JsValue) = JsSuccess(new POD(
+        Some((json \("id")).as[String]),
+        PODProfile(
+          (json \ ("profile") \ ("name")).as[String],
+          (json \ ("profile") \ ("location")).as[String],
+          (json \ ("profile") \ ("description")).as[String]
+        ),
+        (json \ ("ancestors")).as[List[String]],
+        (json \ ("parentId")).as[String]
+      ))
+  }*/
 
   val podRoute = {
     pathPrefix("v1") {
