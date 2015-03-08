@@ -1,5 +1,6 @@
 import com.adform.lab.domain.{AdminRole, EmployeeProfile, Employee}
 import com.adform.lab.repositories.{EmployeeRepositoryComponentImpl, EmployeeRepositoryComponent}
+import org.mindrot.jbcrypt.BCrypt
 import org.scalatest.mock.MockitoSugar
 import org.scalatest.{BeforeAndAfter, Matchers, FlatSpec}
 
@@ -11,7 +12,7 @@ class EmployeeRepositoryTest extends FlatSpec with Matchers  with BeforeAndAfter
   var test: Employee = _
   before {
     employeeRepositoryComponent = new EmployeeRepositoryComponentImpl{}
-    test = Employee(Some("1"), "test", EmployeeProfile("test", "test@gmail.com", "Minsk", "yammer_url", null), null, List(AdminRole), List())
+    test = Employee(Some("1"), BCrypt.hashpw("test", BCrypt.gensalt()), EmployeeProfile("test", "test@gmail.com", "Minsk", "yammer_url", null), null, List(AdminRole), List())
   }
 
   "A employee repository" should "save entities" in {

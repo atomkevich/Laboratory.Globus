@@ -6,13 +6,13 @@ import play.api.libs.json._
 import spray.http.MediaTypes._
 import spray.httpx.PlayJsonSupport._
 import spray.routing.HttpService
-import play.api.libs.functional.syntax._
+import scala.concurrent.ExecutionContext.Implicits.global
 
 
 /**
  * Created by Alina_Tamkevich on 3/3/2015.
  */
-trait PODApi {
+trait PODApi extends Authenticator {
   this: HttpService with PODServiceComponent =>
 
   implicit val podWrites = new Writes[POD] {
@@ -46,15 +46,18 @@ trait PODApi {
     pathPrefix("v1") {
       path("pods") {
         get {
-          parameterMap { queryParams =>
-            respondWithMediaType(`application/json`) {
-              complete {
-                podService.getPODs(queryParams)
+          authenticate(userAuthorization("PODLead")) { employeeInfo =>
+            parameterMap { queryParams =>
+              respondWithMediaType(`application/json`) {
+                complete {
+                  podService.getPODs(queryParams)
+                }
               }
             }
           }
         } ~
-          post {
+        post {
+          authenticate(userAuthorization("Admin")) { employeeInfo =>
             respondWithMediaType(`application/json`) {
               entity(as[JsObject]) { requestObj =>
                 val name = (requestObj \ "name").asOpt[String]
@@ -71,35 +74,42 @@ trait PODApi {
                 }
               }
             }
+           }
           } ~
           pathPrefix("parent" / Segment) { id =>
-            pathEnd {
-              get {
-                respondWithMediaType(`application/json`) {
-                  complete {
-                    podService.getParentPOD(id)
+            authenticate(userAuthorization()) { employeeInfo =>
+              pathEnd {
+                get {
+                  respondWithMediaType(`application/json`) {
+                    complete {
+                      podService.getParentPOD(id)
+                    }
                   }
                 }
               }
             }
           } ~
           pathPrefix("linked" / Segment) { id =>
-            pathEnd {
-              get {
-                respondWithMediaType(`application/json`) {
-                  complete {
-                    podService.getPODLinksById(id)
+            authenticate(userAuthorization()) { employeeInfo =>
+              pathEnd {
+                get {
+                  respondWithMediaType(`application/json`) {
+                    complete {
+                      podService.getPODLinksById(id)
+                    }
                   }
                 }
               }
             }
           } ~
           pathPrefix("childs" / Segment) { id =>
-            pathEnd {
-              get {
-                respondWithMediaType(`application/json`) {
-                  complete {
-                    podService.getPODChildsById(id)
+            authenticate(userAuthorization()) { employeeInfo =>
+              pathEnd {
+                get {
+                  respondWithMediaType(`application/json`) {
+                    complete {
+                      podService.getPODChildsById(id)
+                    }
                   }
                 }
               }
@@ -107,17 +117,19 @@ trait PODApi {
           } ~
           pathPrefix("profile") {
             put {
-              respondWithMediaType(`application/json`) {
-                entity(as[JsObject]) { requestObj =>
-                  val podId = (requestObj \ "id").asOpt[String]
-                  val fields = (requestObj \ "profile").asInstanceOf[JsObject].value
-                    .map { case (k, v) => (k -> (if (v.isInstanceOf[JsString]) v.as[String] else null))}
-                  complete {
-                    if (podId.isDefined) {
-                      podService.updateProfile(podId.get, fields.toMap)
-                      "Successfully updated"
-                    } else {
-                      "Wrong params"
+              authenticate(userAuthorization()) { employeeInfo =>
+                respondWithMediaType(`application/json`) {
+                  entity(as[JsObject]) { requestObj =>
+                    val podId = (requestObj \ "id").asOpt[String]
+                    val fields = (requestObj \ "profile").asInstanceOf[JsObject].value
+                      .map { case (k, v) => (k -> (if (v.isInstanceOf[JsString]) v.as[String] else null))}
+                    complete {
+                      if (podId.isDefined) {
+                        podService.updateProfile(podId.get, fields.toMap)
+                        "Successfully updated"
+                      } else {
+                        "Wrong params"
+                      }
                     }
                   }
                 }
@@ -128,16 +140,20 @@ trait PODApi {
         path("pod" / Segment) { id =>
           pathEnd {
             get {
-              respondWithMediaType(`application/json`) {
-                complete {
-                  podService.getPODById(id)
+              authenticate(userAuthorization()) { employeeInfo =>
+                respondWithMediaType(`application/json`) {
+                  complete {
+                    podService.getPODById(id)
+                  }
                 }
               }
             } ~
             delete {
-              complete {
-                podService.deletePODs(List(id))
-                "Successfully deleted"
+              authenticate(userAuthorization("Admin")) { employeeInfo =>
+                complete {
+                  podService.deletePODs(List(id))
+                  "Successfully deleted"
+                }
               }
             }
           }

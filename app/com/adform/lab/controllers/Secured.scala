@@ -5,6 +5,7 @@ package com.adform.lab.controllers
  */
 
 import com.adform.lab.controllers.Authentication._
+import com.adform.lab.converters.Helper
 import com.adform.lab.domain.Employee
 import play.api.libs.json.JsValue
 import play.api.mvc._
@@ -39,37 +40,16 @@ trait Secured {
 
   def HasRole(role: String)(b: BodyParser[JsValue])(f: => Employee => Request[JsValue] => Result) =
     WithAuthentication(b) { employee => request =>
-      if (employee.hasRole(role) && checkAccess(request, List(role), employee))
+      if (employee.hasAnyRole(role) && Helper.checkAccess(request, List(role), employee))
         f(employee)(request)
       else
         onUnauthorized(request)
     }
 
-  def checkAccess(request: Request[JsValue], roles: List[String], employee: Employee) = {
-    val id = (request.body \ "id").asOpt[String]
-    val parentId = (request.body \ "parentId").asOpt[String]
 
-    val accessRoles = roles.map(role => role match {
-      case "PODLead"  => isSamePOD(id, parentId, employee)
-      case "PODKeeper"  => isSamePOD(id, parentId, employee)
-      case "User" => (id.isDefined && (id == employee.id))
-      case "Admin" => true
-    }
-    )
-    accessRoles.find(_ == true).isDefined
-  }
-  def isSamePOD(id: Option[String], parentId: Option[String], employee: Employee) = {
-    if (!(id.isDefined ||parentId.isDefined)) false
-    else {
-      val parent = if (!parentId.isDefined) {
-         employeeService.getEmployeeById(id.get).map(_.parent)
-      } else parentId
-      parent.isDefined && (parent == employee.parent)
-    }
-  }
   def HasAllRoles(roles: String*)(b: BodyParser[JsValue])(f: => Employee => Request[JsValue] => Result) =
     WithAuthentication(b) { employee => request =>
-      if (employee.hasAllRoles(roles:_*))
+      if (employee.hasAnyRole(roles:_*))
         f(employee)(request)
       else
         onUnauthorized(request)
@@ -77,7 +57,7 @@ trait Secured {
 
   def HasAnyRole(roles: String*)(b: BodyParser[JsValue])(f: => Employee => Request[JsValue] => Result) =
     WithAuthentication(b) { employee => request =>
-      if (employee.hasAnyRole(roles:_*) &&  checkAccess(request, roles.toList, employee))
+      if (employee.hasAnyRole(roles:_*) &&  Helper.checkAccess(request, roles.toList, employee))
         f(employee)(request)
       else
         onUnauthorized(request)
