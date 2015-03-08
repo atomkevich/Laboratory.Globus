@@ -20,6 +20,6 @@ class HttpServiceActor extends Actor with ServiceApi {
         with EmployeesApi with PODApi{
 
   implicit def executionContext = actorRefFactory.dispatcher
-  val route =  podRoute
+  val route =  podRoute ~ employeeRoute
 
 }

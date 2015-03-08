@@ -12,7 +12,9 @@ import play.Play
 object MongoContext {
   //val config = Play.application().configuration()
 
-  val podDB = MongoConnection("atamkevich-OptiPlex-7010")("POD")
+  //val podDB = MongoConnection("atamkevich-OptiPlex-7010")("POD")
+
+  val podDB = MongoConnection("localhost")("POD")
 
   val employeeCollection = podDB("employees")
   val podCollection = podDB("pod")

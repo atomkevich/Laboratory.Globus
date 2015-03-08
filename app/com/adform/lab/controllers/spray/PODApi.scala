@@ -29,19 +29,18 @@ trait PODApi {
       )
     }
   }
-/*
   implicit val podReaders = new Reads[POD] {
     override def reads(json: JsValue) = JsSuccess(new POD(
-        Some((json \("id")).as[String]),
-        PODProfile(
-          (json \ ("profile") \ ("name")).as[String],
-          (json \ ("profile") \ ("location")).as[String],
-          (json \ ("profile") \ ("description")).as[String]
-        ),
-        (json \ ("ancestors")).as[List[String]],
-        (json \ ("parentId")).as[String]
-      ))
-  }*/
+      Some((json \("id")).as[String]),
+      PODProfile(
+        (json \ ("profile") \ ("name")).as[String],
+        (json \ ("profile") \ ("location")).as[String],
+        (json \ ("profile") \ ("description")).as[String]
+      ),
+      (json \ ("ancestors")).as[List[String]],
+      (json \ ("parentId")).as[String]
+    ))
+  }
 
   val podRoute = {
     pathPrefix("v1") {
